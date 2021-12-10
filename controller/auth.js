@@ -1,6 +1,16 @@
 const User = require('../models/auth')
 const jwt = require('jsonwebtoken')
 const expressJWT = require('express-jwt')
+const aws = require('aws-sdk')
+const {changeEmailTemplate} = require('../templates/changeEmail')
+
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+})
+
+const ses = new aws.SES({ apiVersion: '2010-12-01'})
 
 exports.createAdmin = (req, res) => {
   User.findOne({or: [{username: req.body.username, email: req.body.email}]}, (err, user) => {
@@ -78,5 +88,23 @@ exports.updateAdmin= (req, res) => {
       if(err) return res.status(401).json('Error occurred, user was not updated')
       return res.json(user)
     })
+  })
+}
+
+exports.sendChangeAdminEmail = (req, res) => {
+  const token = jwt.sign({username: req.body.account.username, email: req.body.account.email, id: req.body.account.id}, process.env.JWT_CHANGE_EMAIL, {expiresIn: '24hr'})
+
+  const params = changeEmailTemplate(req.body.user.email, token)
+
+  const sendEmail = ses.sendEmail(params).promise()
+
+  sendEmail
+    .then( data => {
+        console.log('Email submitted on SES', data)
+        return res.json(`Change email confirmation was sent to ${req.body.user.email}`)
+  })
+  .catch( err => {
+      console.log('SES email on register', err)
+      return res.status(400).json('We could not verify email address of user, please try again')
   })
 }
