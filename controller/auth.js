@@ -60,10 +60,23 @@ exports.adminLogin = async (req, res) => {
 exports.adminRequiresLogin = expressJWT({ secret: process.env.JWT_SECRET_LOGIN, algorithms: ['HS256']})
 
 exports.readAdmin = (req, res) => {
-  console.log(req.user)
   User.findById(req.user.id, (err, user) => {
     console.log(err)
     if(err) return res.status(401).json('User does not exists in our records.')
-    return res.json({username: user.username, email: user.email, firsName: user.firstName, lastName: user.lastName, role: user.role})
+    return res.json({id: user._id, username: user.username, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role})
+  })
+}
+
+exports.updateAdmin= (req, res) => {
+  for(let key in req.body.user){if(!req.body.user[key]) delete req.body.user[key]}
+
+  User.findOne({username: req.body.user.username}, (err, found) => {
+    console.log(err)
+    if(found) return res.status(400).json('Error occurred, usename already exists.')
+
+    User.findByIdAndUpdate(req.body.account.id, req.body.user, {new: true}, (err, user) => {
+      if(err) return res.status(401).json('Error occurred, user was not updated')
+      return res.json(user)
+    })
   })
 }
