@@ -92,19 +92,30 @@ exports.updateAdmin= (req, res) => {
 }
 
 exports.sendChangeAdminEmail = (req, res) => {
-  const token = jwt.sign({username: req.body.account.username, email: req.body.account.email, id: req.body.account.id}, process.env.JWT_CHANGE_EMAIL, {expiresIn: '24hr'})
+  const token = jwt.sign({username: req.body.account.username, oldEmail: req.body.account.email, newEmail: req.body.user.email, id: req.body.account.id}, process.env.JWT_CHANGE_EMAIL, {expiresIn: '24hr'})
 
   const params = changeEmailTemplate(req.body.user.email, token)
 
   const sendEmail = ses.sendEmail(params).promise()
 
   sendEmail
-    .then( data => {
+  .then( data => {
         console.log('Email submitted on SES', data)
         return res.json(`Change email confirmation was sent to ${req.body.user.email}`)
   })
   .catch( err => {
       console.log('SES email on register', err)
       return res.status(400).json('We could not verify email address of user, please try again')
+  })
+}
+
+exports.adminUpdateEmail = (req, res) => {
+  jwt.verify(req.body.token, process.env.JWT_CHANGE_EMAIL, (err, decoded) => {
+    if(err) return res.status(401).json('URL is expired, please submit another request')
+    
+    User.findByIdAndUpdate(decoded.id, {email: decoded.newEmail}, {new: true}, (err, user) => {
+      if(err) return res.status(400).json('Error ocurred updating your email, please try again later.')
+      return res.json(`Email was to ${decoded.newEmail}`)
+    })
   })
 }

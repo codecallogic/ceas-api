@@ -6,7 +6,7 @@ exports.changeEmailTemplate = (newEmail, token) => {
     },
     Message: {
       Subject: {
-        Data: 'New Message',
+        Data: 'Change Email',
         Charset: 'UTF-8'
       },
       Body: {
