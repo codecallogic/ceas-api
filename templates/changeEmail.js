@@ -1,6 +1,6 @@
 exports.changeEmailTemplate = (newEmail, token) => {
   return {
-    Source: `CEAS <contact@fabricioguardia.com>` ,
+    Source: `CEAS <${process.env.ADMIN_EMAIL}>` ,
     Destination: { 
       ToAddresses: [newEmail]
     },

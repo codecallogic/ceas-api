@@ -13,20 +13,23 @@ aws.config.update({
 const ses = new aws.SES({ apiVersion: '2010-12-01'})
 
 exports.createAdmin = (req, res) => {
-  User.findOne({or: [{username: req.body.username, email: req.body.email}]}, (err, user) => {
-    console.log(err)
-    if(user) return res.status(400).json('Error ocurred, username or email exists.')
-    const newUser = new User(req.body)
-    newUser.save((err, result) => {
-      console.log(err)
-      if(err) return res.status(401).json('Error ocurred, could register admin, please try again later')
-      return res.json('Admin created')
-    })
-  })
+  console.log(req.body)
+  // User.findOne({or: [{username: req.body.username, email: req.body.email}]}, (err, user) => {
+  //   console.log(err)
+  //   if(user) return res.status(400).json('Error ocurred, username or email exists.')
+  //   const newUser = new User(req.body)
+  //   newUser.save((err, result) => {
+  //     console.log(err)
+  //     if(err) return res.status(401).json('Error ocurred, could not register admin, please try again later')
+  //     return res.json('Admin created')
+  //   })
+  // })
 }
 
 exports.adminLogin = async (req, res) => {
   // console.log(req.body)
+  // console.log('PARSER', req.body.password.replace(/<[^>]+>/g, ''))
+  req.body.password = req.body.password.replace(/<[^>]+>/g, '')
   User.findOne({$or: [{username: req.body.username}, {email: req.body.username}]}, (err, user) => {
     console.log(err)
     if(err || !user) return res.status(401).json('Error ocurred, account does not exist.')
