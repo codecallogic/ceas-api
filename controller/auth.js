@@ -2,7 +2,11 @@ const User = require('../models/auth')
 const jwt = require('jsonwebtoken')
 const expressJWT = require('express-jwt')
 const aws = require('aws-sdk')
+const {generatePassword} = require('../helpers/auth')
+
+// EMAIL TEMPLATES //
 const {changeEmailTemplate} = require('../templates/changeEmail')
+const {inviteAdmin} = require('../templates/inviteAdmin')
 
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -12,18 +16,81 @@ aws.config.update({
 
 const ses = new aws.SES({ apiVersion: '2010-12-01'})
 
-exports.createAdmin = (req, res) => {
-  console.log(req.body)
-  // User.findOne({or: [{username: req.body.username, email: req.body.email}]}, (err, user) => {
-  //   console.log(err)
-  //   if(user) return res.status(400).json('Error ocurred, username or email exists.')
-  //   const newUser = new User(req.body)
-  //   newUser.save((err, result) => {
-  //     console.log(err)
-  //     if(err) return res.status(401).json('Error ocurred, could not register admin, please try again later')
-  //     return res.json('Admin created')
-  //   })
-  // })
+exports.inviteAdmin = async (req, res) => {
+  let password = await generatePassword()
+  req.body.password = password
+  console.log('INVITE ADMIN', req.body)
+
+  User.findOne({username: req.body.username, email: req.body.email}, (err, user) => {
+    console.log(err)
+    if(user) return res.status(400).json('Error ocurred, username or email exists.')
+    
+    const token = jwt.sign(req.body, process.env.JWT_INVITATION_SECRET, {expiresIn: '24hr'})
+
+    const params = inviteAdmin(req.body.email, token, req.body.firstName, req.body.username, req.body.password)
+    
+    const sendEmail = ses.sendEmail(params).promise()
+
+    sendEmail.then(data => {
+      console.log('EMAIL SENT', data)
+      return res.json(`Invite was sent to ${req.body.email}`)
+    }).catch( err => {
+      console.log('EMAIL ERROR', err)
+      return res.status(400).json('We could not verify your email address, please try again')
+    })
+    
+  })
+  
+}
+
+exports.activateAdmin = (req, res) => {
+
+  jwt.verify(req.body.token, process.env.JWT_INVITATION_SECRET, function(err, decoded){
+    if(err){
+      console.log(err)
+      return res.status(400).json('This url has expired, please try again later.')
+    }
+
+    User.findOne({email: decoded.email, username: decoded.username}, (err, found) => {
+      console.log(err)
+      if(found){
+        return res.status(400).json('Error occurred account already exists')
+      }
+
+      const newAdmin = new User(decoded)
+      newAdmin.save((err, admin) => {
+        if(err){
+          console.log(err)
+          return res.status(400).json('Could not activate account, please try again later')
+        }
+
+        if(admin){
+          const token = jwt.sign({id: admin._id}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
+          const {_id, username, email, role} = admin
+          const userAdmin = {_id, username, email, role}
+
+          return res.status(202).cookie(
+              "accessTokenAdmin", token, {
+              sameSite: 'strict',
+              expires: new Date(new Date().getTime() + (60 * 60 * 1000)),
+              httpOnly: true,
+              secure: false,
+              overwrite: true
+          })
+          .cookie("userAdmin", JSON.stringify(userAdmin), {
+            sameSite: 'strict',
+            expires: new Date(new Date().getTime() + (60 * 60 * 1000)),
+            httpOnly: true,
+            secure: false,
+            overwrite: true
+          })
+          .send('User is logged in')
+        }
+      })
+    })
+  
+  })
+
 }
 
 exports.adminLogin = async (req, res) => {
