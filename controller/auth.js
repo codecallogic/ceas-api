@@ -189,3 +189,10 @@ exports.adminUpdateEmail = (req, res) => {
     })
   })
 }
+
+exports.allAdmin = (req, res) => {
+  User.find({}).select(['-password']).exec((err, list) => {
+    if(err) res.status(400).json('Error ocurred, getting admin users')
+    res.json(list)
+  })
+}
