@@ -1,9 +1,12 @@
 const express = require('express')
 const router = express.Router()
-const {inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail} = require('../controller/auth')
+const {inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, authorizedOnly, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail} = require('../controller/auth')
 
 // GET ALL
 const {allAdmin} = require('../controller/auth')
+
+// ADMIN USERS CRUD 
+const {deleteAdmin} = require('../controller/auth')
 
 // MIDDLEWARE
 const {adminLoginValidator} = require('../validators/auth')
@@ -19,6 +22,9 @@ router.post('/update-admin-email',  adminRequiresLogin, adminUpdateEmail)
 
 
 // GET ALL
-router.get('/all-admin',  adminRequiresLogin, allAdmin)
+router.get('/all-admin', adminRequiresLogin, allAdmin)
+
+// ADMIN USERS CRUD
+router.post('/delete-admin', adminRequiresLogin, authorizedOnly, deleteAdmin)
 
 module.exports  = router

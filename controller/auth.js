@@ -19,7 +19,7 @@ const ses = new aws.SES({ apiVersion: '2010-12-01'})
 exports.inviteAdmin = async (req, res) => {
   let password = await generatePassword()
   req.body.password = password
-  console.log('INVITE ADMIN', req.body)
+  // console.log('INVITE ADMIN', req.body)
 
   User.findOne({username: req.body.username, email: req.body.email}, (err, user) => {
     console.log(err)
@@ -65,7 +65,7 @@ exports.activateAdmin = (req, res) => {
         }
 
         if(admin){
-          const token = jwt.sign({id: admin._id}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
+          const token = jwt.sign({id: admin._id, role: admin.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
           const {_id, username, email, role} = admin
           const userAdmin = {_id, username, email, role}
 
@@ -94,18 +94,18 @@ exports.activateAdmin = (req, res) => {
 }
 
 exports.adminLogin = async (req, res) => {
-  // console.log(req.body)
   // console.log('PARSER', req.body.password.replace(/<[^>]+>/g, ''))
   req.body.password = req.body.password.replace(/<[^>]+>/g, '')
+
   User.findOne({$or: [{username: req.body.username}, {email: req.body.username}]}, (err, user) => {
     console.log(err)
     if(err || !user) return res.status(401).json('Error ocurred, account does not exist.')
-    if(user.role == 'admin'){
+    if(user.role == 'admin' || user.role == 'regular_admin'){
       user.comparePassword(req.body.password, (err, isMatch) => {
         console.log(err)
 
         if(isMatch){
-          const token = jwt.sign({id: user._id}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
+          const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
           const {_id, username, email, role} = user
           const userAdmin = {_id, username, email, role}
 
@@ -141,10 +141,25 @@ exports.adminRequiresLogin = expressJWT({ secret: process.env.JWT_SECRET_LOGIN, 
 
 exports.readAdmin = (req, res) => {
   User.findById(req.user.id, (err, user) => {
-    console.log(err)
-    if(err) return res.status(401).json('User does not exists in our records.')
-    return res.json({id: user._id, username: user.username, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role})
+    console.log('ERROR', err)
+    if(err) return res.status(400).json('User does not exists in our records.')
+  
+    if(user){
+      return res.json({id: user._id, username: user.username, email: user.email, firstName: user.firstName, lastName: user.lastName, role: user.role})
+    }else{
+      return res.status(400).json('User does not exists in our records.')
+    }
   })
+}
+
+exports.authorizedOnly = (req, res, next) => {
+  if(req.user.role == 'admin'){
+    next()
+  }else if(req.user.role == 'regular_admin'){
+    return res.status(400).json('Authorized users only')
+  }else {
+    return res.status(400).json('Authorized users only')
+  }
 }
 
 exports.updateAdmin= (req, res) => {
@@ -194,5 +209,17 @@ exports.allAdmin = (req, res) => {
   User.find({}).select(['-password']).exec((err, list) => {
     if(err) res.status(400).json('Error ocurred, getting admin users')
     res.json(list)
+  })
+}
+
+exports.deleteAdmin = (req, res) => {
+  User.findByIdAndDelete(req.body.id, (err, response) => {
+    console.log(err)
+    if(err) res.status(400).json('Error occurred deleting admin user')
+    User.find({}, (err, list) => {
+      console.log(err)
+      if(err) return res.status(400).json('Error occurred loading admin users')
+      return res.json(list)
+    })
   })
 }
