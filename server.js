@@ -14,7 +14,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors({credentials: true, origin: process.env.CLIENT_URL}))
 
-app.use('/api/auth', authRoutes)
+app.use('/api/auth', authRoutes, (err, res, next) => {
+  if(err.name === 'UnauthorizedError') return res.status(400).json('Error ocurred, please login first.')
+ })
 
 const port = process.env.PORT || 3001
 

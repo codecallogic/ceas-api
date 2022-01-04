@@ -54,7 +54,7 @@ exports.activateAdmin = (req, res) => {
     User.findOne({email: decoded.email, username: decoded.username}, (err, found) => {
       console.log(err)
       if(found){
-        return res.status(400).json('Error occurred account already exists')
+        return res.status(400).json('Error occurred, username or email exists.')
       }
 
       const newAdmin = new User(decoded)
@@ -165,11 +165,13 @@ exports.authorizedOnly = (req, res, next) => {
 exports.updateAdmin= (req, res) => {
   for(let key in req.body.user){if(!req.body.user[key]) delete req.body.user[key]}
 
-  User.findOne({username: req.body.user.username}, (err, found) => {
+  User.findOne({username: req.body.user.username, email: req.body.user.email}, (err, found) => {
     console.log(err)
-    if(found) return res.status(400).json('Error occurred, usename already exists.')
+    if(err) return res.status(400).json('Error occurred, could not find user in records')
 
-    User.findByIdAndUpdate(req.body.account.id, req.body.user, {new: true}, (err, user) => {
+    let id = req.body.account ? req.body.account.id : req.body.user._id
+
+    User.findByIdAndUpdate(id, req.body.user, {new: true}, (err, user) => {
       if(err) return res.status(401).json('Error occurred, user was not updated')
       return res.json(user)
     })
