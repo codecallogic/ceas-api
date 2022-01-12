@@ -112,14 +112,14 @@ exports.adminLogin = async (req, res) => {
           return res.status(202).cookie(
               "accessTokenAdmin", token, {
               sameSite: 'strict',
-              expires: new Date(new Date().getTime() + (60 * 60 * 1000)),
+              expires: new Date(new Date().getTime() + (60 * 60 * 2000)),
               httpOnly: true,
               secure: false,
               overwrite: true
           })
           .cookie("userAdmin", JSON.stringify(userAdmin), {
             sameSite: 'strict',
-            expires: new Date(new Date().getTime() + (60 * 60 * 1000)),
+            expires: new Date(new Date().getTime() + (60 * 60 * 2000)),
             httpOnly: true,
             secure: false,
             overwrite: true
@@ -173,7 +173,11 @@ exports.updateAdmin= (req, res) => {
 
     User.findByIdAndUpdate(id, req.body.user, {new: true}, (err, user) => {
       if(err) return res.status(401).json('Error occurred, user was not updated')
-      return res.json(user)
+      
+      User.find({}).select(['-password']).exec((err, list) => {
+        if(err) return res.status(400).json(`Error ocurred loading user data`)
+        return res.json(list)
+      })
     })
   })
 }
@@ -202,7 +206,7 @@ exports.adminUpdateEmail = (req, res) => {
     
     User.findByIdAndUpdate(decoded.id, {email: decoded.newEmail}, {new: true}, (err, user) => {
       if(err) return res.status(400).json('Error ocurred updating your email, please try again later.')
-      return res.json(`Email was to ${decoded.newEmail}`)
+      return res.json(`Your email was changed to ${user.email}`)
     })
   })
 }
@@ -218,7 +222,7 @@ exports.deleteAdmin = (req, res) => {
   User.findByIdAndDelete(req.body.id, (err, response) => {
     console.log(err)
     if(err) res.status(400).json('Error occurred deleting admin user')
-    User.find({}, (err, list) => {
+    User.find({}).select(['-password']).exec((err, list) => {
       console.log(err)
       if(err) return res.status(400).json('Error occurred loading admin users')
       return res.json(list)
