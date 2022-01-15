@@ -9,16 +9,17 @@ const app = express()
 // ROUTES
 const authRoutes = require('./routes/auth')
 const componentRoutes = require('./routes/components')
+const facultyRoutes = require('./routes/faculty')
 
 // MIDDLEWARE
 app.use(morgan('dev'));
 app.use(express.json());
+app.use('/files/storage', express.static('public'))
 app.use(cors({credentials: true, origin: process.env.CLIENT_URL}))
 
-app.use('/api/auth', authRoutes, (err, res, next) => {
-  if(err.name === 'UnauthorizedError') return res.status(400).json('Error ocurred, please login first.')
- })
+app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
+app.use('/api/faculty', facultyRoutes)
 
 const port = process.env.PORT || 3001
 

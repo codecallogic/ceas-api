@@ -8,7 +8,7 @@ const Component = new Schema(
     required: true,
   },
   leader: [{
-    type: Schema.Types.ObjectId, ref: 'Leader'
+    type: Schema.Types.ObjectId, ref: 'Faculty'
   }],
   active: {
     type: String,

@@ -112,14 +112,14 @@ exports.adminLogin = async (req, res) => {
           return res.status(202).cookie(
               "accessTokenAdmin", token, {
               sameSite: 'strict',
-              expires: new Date(new Date().getTime() + (60 * 60 * 2000)),
+              expires: new Date(Date.now() + (60 * 60 * 1000)),
               httpOnly: true,
               secure: false,
               overwrite: true
           })
           .cookie("userAdmin", JSON.stringify(userAdmin), {
             sameSite: 'strict',
-            expires: new Date(new Date().getTime() + (60 * 60 * 2000)),
+            expires: new Date(Date.now() + (60 * 60 * 1000)),
             httpOnly: true,
             secure: false,
             overwrite: true
@@ -150,6 +150,11 @@ exports.readAdmin = (req, res) => {
       return res.status(400).json('User does not exists in our records.')
     }
   })
+}
+
+exports.checkTokenExpiration = (req, res, next) => {
+  if (Date.now() > req.user.exp * 1000) return res.status(406).json('Please login to continue');
+  next()
 }
 
 exports.authorizedOnly = (req, res, next) => {
