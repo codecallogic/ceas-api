@@ -5,33 +5,43 @@ const Faculty = new Schema(
 {
   profileImage: {
     type: String,
+    default: ''
   },
   title: {
     type: String,
+    default: ''
   },
   name: {
     type: String,
+    default: ''
   },
   profession: {
     type: String,
+    default: ''
   },
   department: {
-    type: String
+    type: String,
+    default: ''
   },
   email: {
-    type: String
+    type: String,
+    default: ''
   },
   website: {
-    type: String
+    type: String,
+    default: ''
   },
   officePhone: {
-    type: String
+    type: String,
+    default: ''
   },
   officeLocation: {
-    type: String
+    type: String,
+    default: ''
   },
   centerAssociation: {
-    type: String
+    type: String,
+    default: ''
   },
   componentOne: [{
     type: Schema.Types.ObjectId, ref: 'Component'
@@ -43,7 +53,8 @@ const Faculty = new Schema(
     type: Schema.Types.ObjectId, ref: 'Component'
   }],
   researchInterests: {
-    type: String
+    type: String,
+    default: ''
   }
 },
 {
