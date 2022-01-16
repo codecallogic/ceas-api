@@ -84,3 +84,24 @@ exports.updateFaculty = (req, res) => {
     })
   })
 }
+
+exports.deleteFaculty = (req, res) => {
+  Faculty.findById(req.body.id, async (err, faculty) => {
+    if(err) return res.status(401).json('Error ocurred finding faculty member')
+
+    if(faculty) await unlinkAsync(`public/faculty/${faculty.profileImage}`)
+
+    Faculty.findByIdAndDelete(req.body.id, (err, response) => {
+      if(err) return res.status(401).json('Error ocurred deleting faculty member')
+
+      Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+        if(err) return res.status(401).json('Faculty member was deleted but there was an error loading table data')
+
+        return res.json(list)
+        
+      })
+      
+    })
+
+  })
+}
