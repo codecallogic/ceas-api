@@ -10,6 +10,7 @@ const app = express()
 const authRoutes = require('./routes/auth')
 const componentRoutes = require('./routes/components')
 const facultyRoutes = require('./routes/faculty')
+const studentRoutes = require('./routes/student')
 
 // MIDDLEWARE
 app.use(morgan('dev'));
@@ -20,6 +21,7 @@ app.use(cors({credentials: true, origin: process.env.CLIENT_URL}))
 app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
 app.use('/api/faculty', facultyRoutes)
+app.use('/api/student', studentRoutes)
 
 const port = process.env.PORT || 3001
 

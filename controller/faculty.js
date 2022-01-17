@@ -58,7 +58,15 @@ exports.getFaculty = (req, res) => {
 exports.updateFaculty = (req, res) => {
   upload(req, res, async (err) => {
   
-    if(req.file) await unlinkAsync(`public/faculty/${req.body.previousProfileImage}`)
+    if(req.file) {
+      try {
+        const removeImage = await unlinkAsync(`public/faculty/${req.body.previousProfileImage}`)
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     if(req.file) req.body.profileImage = req.file.filename
     
     if (err instanceof multer.MulterError) {
