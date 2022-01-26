@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth')
 const componentRoutes = require('./routes/components')
 const facultyRoutes = require('./routes/faculty')
 const studentRoutes = require('./routes/student')
+const staffRoutes = require('./routes/staff')
 
 // MIDDLEWARE
 app.use(morgan('dev'));
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
 app.use('/api/faculty', facultyRoutes)
 app.use('/api/student', studentRoutes)
+app.use('/api/staff', staffRoutes)
 
 const port = process.env.PORT || 3001
 

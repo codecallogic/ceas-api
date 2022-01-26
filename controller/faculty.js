@@ -127,7 +127,13 @@ exports.deleteFaculty = (req, res) => {
   Faculty.findById(req.body.id, async (err, faculty) => {
     if(err) return res.status(401).json('Error ocurred finding item in records')
 
-    if(faculty) await unlinkAsync(`public/faculty/${faculty.image}`)
+    if(faculty.image){
+      try {
+        const removeImage = await unlinkAsync(`public/faculty/${student.image}`)
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
     Faculty.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(401).json('Error ocurred deleting item')

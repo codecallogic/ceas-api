@@ -16,7 +16,7 @@ const Student = new Schema(
     default: ''
   },
   advisor: [{
-    type: Schema.Types.ObjectId, ref: 'Faculty', default: ''
+    type: Schema.Types.ObjectId, ref: 'Faculty' 
   }],
   department: {
     type: String,
@@ -39,7 +39,7 @@ const Student = new Schema(
     default: ''
   },
   component: [{
-    type: Schema.Types.ObjectId, ref: 'Component', default: ''
+    type: Schema.Types.ObjectId, ref: 'Component'
   }],
   status: {
     type: String,
