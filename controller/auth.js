@@ -2,9 +2,18 @@ const User = require('../models/auth')
 const jwt = require('jsonwebtoken')
 const expressJWT = require('express-jwt')
 const aws = require('aws-sdk')
-const {generatePassword} = require('../helpers/auth')
+const { generatePassword } = require('../helpers/auth')
+const multer = require('multer')
 
-// EMAIL TEMPLATES //
+// MULTER UPLOAD
+let storage = multer.diskStorage({
+  destination: function (req, file, cb){ cb(null, 'public/adminUser') },
+  filename: function(req, file, cb){ cb(null, file.originalname) }
+})
+
+let upload = multer({ storage: storage }).single('file')
+
+// EMAIL TEMPLATES
 const {changeEmailTemplate} = require('../templates/changeEmail')
 const {inviteAdmin} = require('../templates/inviteAdmin')
 
@@ -16,31 +25,49 @@ aws.config.update({
 
 const ses = new aws.SES({ apiVersion: '2010-12-01'})
 
-exports.inviteAdmin = async (req, res) => {
-  let password = await generatePassword()
-  req.body.password = password
-  // console.log('INVITE ADMIN', req.body)
+exports.inviteAdmin = (req, res) => {
 
-  User.findOne({username: req.body.username, email: req.body.email}, (err, user) => {
-    console.log(err)
-    if(user) return res.status(400).json('Error ocurred, username or email exists.')
-    
-    const token = jwt.sign(req.body, process.env.JWT_INVITATION_SECRET, {expiresIn: '24hr'})
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      console.log(err)
+      return res.status(500).json(err)
+    } else if (err) {
+      console.log(err)
+      return res.status(500).json(err)
+    }
 
-    const params = inviteAdmin(req.body.email, token, req.body.firstName, req.body.username, req.body.password)
-    
-    const sendEmail = ses.sendEmail(params).promise()
+    for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
 
-    sendEmail.then(data => {
-      console.log('EMAIL SENT', data)
-      return res.json(`Invite was sent to ${req.body.email}`)
-    }).catch( err => {
-      console.log('EMAIL ERROR', err)
-      return res.status(400).json('We could not verify your email address, please try again')
+    let password = await generatePassword()
+    req.body.password = password
+    // console.log('INVITE ADMIN', req.body)
+
+    User.findOne({username: req.body.username, email: req.body.email}, (err, user) => {
+      console.log(err)
+      if(user) return res.status(400).json('Error ocurred, username or email exists.')
+      
+      const token = jwt.sign(req.body, process.env.JWT_INVITATION_SECRET, {expiresIn: '24hr'})
+
+      const params = inviteAdmin(req.body.email, token, req.body.firstName, req.body.username, req.body.password)
+      
+      const sendEmail = ses.sendEmail(params).promise()
+
+      sendEmail.then(data => {
+        console.log('EMAIL SENT', data)
+       
+        User.find({}).select(['-password']).exec((err, list) => {
+          if(err) return res.status(400).json(`Error ocurred loading items`)
+          return res.json(list)
+        })
+        
+      }).catch( err => {
+        console.log('EMAIL ERROR', err)
+        return res.status(400).json('We could not verify your email address, please try again')
+      })
+      
     })
     
   })
-  
 }
 
 exports.activateAdmin = (req, res) => {
@@ -51,7 +78,7 @@ exports.activateAdmin = (req, res) => {
       return res.status(400).json('This url has expired, please try again later.')
     }
 
-    User.findOne({email: decoded.email, username: decoded.username}, (err, found) => {
+    User.findOne({$or: [{username: decoded.username}, {email: decoded.email}]}, (err, found) => {
       console.log(err)
       if(found){
         return res.status(400).json('Error occurred, username or email exists.')
@@ -94,13 +121,10 @@ exports.activateAdmin = (req, res) => {
 }
 
 exports.adminLogin = async (req, res) => {
-  // console.log('PARSER', req.body.password.replace(/<[^>]+>/g, ''))
-  req.body.password = req.body.password.replace(/<[^>]+>/g, '')
-
   User.findOne({$or: [{username: req.body.username}, {email: req.body.username}]}, (err, user) => {
     console.log(err)
     if(err || !user) return res.status(401).json('Error ocurred, account does not exist.')
-    if(user.role == 'admin' || user.role == 'regular_admin'){
+    if(user.role == 'main_admin' || user.role == 'regular_admin'){
       user.comparePassword(req.body.password, (err, isMatch) => {
         console.log(err)
 
@@ -158,33 +182,46 @@ exports.checkTokenExpiration = (req, res, next) => {
 }
 
 exports.authorizedOnly = (req, res, next) => {
-  if(req.user.role == 'admin'){
+  if(req.user.role == 'main_admin'){
     next()
   }else if(req.user.role == 'regular_admin'){
     return res.status(400).json('Authorized users only')
   }else {
+    console.log('Hello')
     return res.status(400).json('Authorized users only')
   }
 }
 
 exports.updateAdmin= (req, res) => {
-  for(let key in req.body.user){if(!req.body.user[key]) delete req.body.user[key]}
 
-  User.findOne({username: req.body.user.username, email: req.body.user.email}, (err, found) => {
-    console.log(err)
-    if(err) return res.status(400).json('Error occurred, could not find user in records')
+  upload(req, res, async (err) => {
+    if (err instanceof multer.MulterError) {
+      console.log(err)
+      return res.status(500).json(err)
+    } else if (err) {
+      console.log(err)
+      return res.status(500).json(err)
+    }
 
-    let id = req.body.account ? req.body.account.id : req.body.user._id
+    for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
 
-    User.findByIdAndUpdate(id, req.body.user, {new: true}, (err, user) => {
-      if(err) return res.status(401).json('Error occurred, user was not updated')
-      
-      User.find({}).select(['-password']).exec((err, list) => {
-        if(err) return res.status(400).json(`Error ocurred loading user data`)
-        return res.json(list)
+    User.findOne({username: req.body.username, email: req.body.email}, (err, found) => {
+      console.log(err)
+      if(err) return res.status(400).json('Error occurred could not find item in records')
+
+      User.findByIdAndUpdate(req.body._id, req.body, {new: true}, (err, response) => {
+        if(err) return res.status(401).json('Error occurred item was not updated')
+        
+        User.find({}).select(['-password']).exec((err, list) => {
+          if(err) return res.status(400).json(`Error ocurred loading items`)
+          return res.json(list)
+        })
+
       })
+
     })
-  })
+    
+  })  
 }
 
 exports.sendChangeAdminEmail = (req, res) => {
@@ -224,13 +261,17 @@ exports.allAdmin = (req, res) => {
 }
 
 exports.deleteAdmin = (req, res) => {
+
   User.findByIdAndDelete(req.body.id, (err, response) => {
     console.log(err)
-    if(err) res.status(400).json('Error occurred deleting admin user')
+    if(err) res.status(400).json('Error occurred deleting item')
+
     User.find({}).select(['-password']).exec((err, list) => {
       console.log(err)
-      if(err) return res.status(400).json('Error occurred loading admin users')
+      if(err) return res.status(400).json('Error occurred loading items')
       return res.json(list)
     })
+
   })
+
 }

@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 
 const Student = new Schema(
 {
-  profileImage: {
+  image: {
     type: String,
     default: ''
   },
@@ -16,7 +16,7 @@ const Student = new Schema(
     default: ''
   },
   advisor: [{
-    type: Schema.Types.ObjectId, ref: 'Faculty'
+    type: Schema.Types.ObjectId, ref: 'Faculty', default: ''
   }],
   department: {
     type: String,
@@ -39,7 +39,7 @@ const Student = new Schema(
     default: ''
   },
   component: [{
-    type: Schema.Types.ObjectId, ref: 'Component'
+    type: Schema.Types.ObjectId, ref: 'Component', default: ''
   }],
   status: {
     type: String,

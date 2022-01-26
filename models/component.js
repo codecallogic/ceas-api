@@ -5,22 +5,22 @@ const Component = new Schema(
 {
   name: {
     type: String,
-    required: true,
+    default: ''
   },
   leader: [{
     type: Schema.Types.ObjectId, ref: 'Faculty'
   }],
   active: {
     type: String,
-    required: true
+    default: ''
   },
   shortDescription: {
     type: String,
-    required: true
+    default: ''
   },
   longDescription: {
     type: String,
-    required: true
+    default: ''
   }
 },
 {

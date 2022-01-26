@@ -20,7 +20,6 @@ router.post('/update-admin-profile', adminRequiresLogin, updateAdmin)
 router.post('/send-change-admin-email', adminRequiresLogin, sendChangeAdminEmail)
 router.post('/update-admin-email',  adminRequiresLogin, adminUpdateEmail)
 
-
 // GET ALL
 router.get('/all-admin', adminRequiresLogin, allAdmin)
 

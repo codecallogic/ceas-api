@@ -3,7 +3,16 @@ const Schema = mongoose.Schema
 
 const Faculty = new Schema(
 {
-  profileImage: {
+  componentOne: [{
+    type: Schema.Types.ObjectId, ref: 'Component'
+  }],
+  componentTwo: [{
+    type: Schema.Types.ObjectId, ref: 'Component'
+  }],
+  componentThree: [{
+    type: Schema.Types.ObjectId, ref: 'Component'
+  }],
+  image: {
     type: String,
     default: ''
   },
@@ -43,15 +52,6 @@ const Faculty = new Schema(
     type: String,
     default: ''
   },
-  componentOne: [{
-    type: Schema.Types.ObjectId, ref: 'Component'
-  }],
-  componentTwo: [{
-    type: Schema.Types.ObjectId, ref: 'Component'
-  }],
-  componentThree: [{
-    type: Schema.Types.ObjectId, ref: 'Component'
-  }],
   researchInterests: {
     type: String,
     default: ''
