@@ -126,12 +126,12 @@ exports.updateStaff = (req, res) => {
 }
 
 exports.deleteStaff = (req, res) => {
-  Staff.findById(req.body.id, async (err, staff) => {
+  Staff.findById(req.body.id, async (err, item) => {
     if(err) return res.status(401).json('Error ocurred finding item in records')
 
-    if(staff.image){
+    if(item.image){
       try {
-        const removeImage = await unlinkAsync(`public/staff/${student.image}`)
+        const removeImage = await unlinkAsync(`public/staff/${item.image}`)
       } catch (error) {
         console.log(error)
       }

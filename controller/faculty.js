@@ -124,12 +124,12 @@ exports.updateFaculty = (req, res) => {
 }
 
 exports.deleteFaculty = (req, res) => {
-  Faculty.findById(req.body.id, async (err, faculty) => {
+  Faculty.findById(req.body.id, async (err, item) => {
     if(err) return res.status(401).json('Error ocurred finding item in records')
 
-    if(faculty.image){
+    if(item.image){
       try {
-        const removeImage = await unlinkAsync(`public/faculty/${student.image}`)
+        const removeImage = await unlinkAsync(`public/faculty/${item.image}`)
       } catch (error) {
         console.log(error)
       }
