@@ -4,11 +4,11 @@ const {createFaculty, getFaculty, updateFaculty, deleteFaculty} = require('../co
 
 // MIDDLEWARE
 const {adminRequiresLogin} = require('../controller/auth')
-const { clearFacultyFromComponents, clearFacultyFromStudents } = require('../controller/clearingData')
+const { clearFacultyFromComponents, clearFacultyFromStudents, clearFacultyFromPublications } = require('../controller/clearingData')
 
 router.post('/create-faculty', adminRequiresLogin, createFaculty)
 router.get('/get-all-faculty', adminRequiresLogin, getFaculty)
 router.post('/update-faculty', adminRequiresLogin, updateFaculty)
-router.post('/delete-faculty', adminRequiresLogin, clearFacultyFromComponents, clearFacultyFromStudents, deleteFaculty)
+router.post('/delete-faculty', adminRequiresLogin, clearFacultyFromComponents, clearFacultyFromStudents, clearFacultyFromPublications, deleteFaculty)
 
 module.exports  = router

@@ -4,11 +4,11 @@ const { createComponent, allComponents, updateComponent, deleteComponent } = req
 
 // MIDDLEWARE
 const { adminRequiresLogin } = require('../controller/auth')
-const { clearComponentsFromFaculty, clearComponentsFromStudents } = require('../controller/clearingData')
+const { clearComponentsFromFaculty, clearComponentsFromStudents, clearComponentsFromPublications } = require('../controller/clearingData')
 
 router.post('/create-component', adminRequiresLogin, createComponent)
 router.get('/all-components', adminRequiresLogin, allComponents)
 router.post('/update-component', adminRequiresLogin, updateComponent)
-router.post('/delete-component', adminRequiresLogin, clearComponentsFromFaculty, clearComponentsFromStudents, deleteComponent)
+router.post('/delete-component', adminRequiresLogin, clearComponentsFromFaculty, clearComponentsFromStudents, clearComponentsFromPublications, deleteComponent)
 
 module.exports  = router
