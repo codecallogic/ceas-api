@@ -1,17 +1,17 @@
+const Publication = require('../models/publication')
 const multer = require('multer')
-const Faculty = require('../models/faculty')
 const fs = require('fs')
 const { promisify } = require('util')
 const unlinkAsync = promisify(fs.unlink)
 
 let storage = multer.diskStorage({
-  destination: function (req, file, cb){ cb(null, 'public/faculty') },
+  destination: function (req, file, cb){ cb(null, 'public/publication') },
   filename: function(req, file, cb){ cb(null, file.originalname) }
 })
 
 let upload = multer({ storage: storage }).single('file')
 
-exports.createFaculty = (req, res) => {
+exports.createPublication = (req, res) => {
   upload(req, res, (err) => {
   
     if (err instanceof multer.MulterError) {
@@ -22,11 +22,11 @@ exports.createFaculty = (req, res) => {
       return res.status(500).json(err)
     }
     
-    if(req.body.previousImage) delete req.body.previousImage
+    if(req.body.previousFile) delete req.body.previousFile
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.image = req.file.filename
-
+    if(req.file) req.body.file = req.file.filename
+    
     for(let key in req.body){ 
 
       if(typeof req.body[key] == 'object'){
@@ -42,17 +42,17 @@ exports.createFaculty = (req, res) => {
     }
 
 
-    Faculty.findOne({name: req.body.name}, (err, found) => {
+    Publication.findOne({name: req.body.name}, (err, found) => {
       console.log(err)
       if(found) return res.status(400).json('Error occurred item with that name exists')
 
-      const newFaculty = new Faculty(req.body)
+      const newPublication = new Publication(req.body)
 
-      newFaculty.save((err, response) => {
+      newPublication.save((err, response) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+        Publication.find({}).populate(['faculty', 'components']).exec((err, list) => {
           console.log(err)
           if(err) return res.status(400).json('Item was created, but there was an error table items')
 
@@ -64,14 +64,14 @@ exports.createFaculty = (req, res) => {
   })
 }
 
-exports.getFaculty = (req, res) => {
-  Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+exports.allPublications = (req, res) => {
+  Publication.find({}).populate(['faculty', 'components']).exec((err, list) => {
     if(err) return res.status(401).json('Error ocurred loading list items')
     return res.json(list)
   })
 }
 
-exports.updateFaculty = (req, res) => {
+exports.updatePublication = (req, res) => {
   upload(req, res, async (err) => {
     
     if (err instanceof multer.MulterError) {
@@ -82,9 +82,9 @@ exports.updateFaculty = (req, res) => {
       return res.status(500).json(err)
     }
     
-    if(req.file && req.body.previousImage) {
+    if(req.file && req.body.previousFile) {
       try {
-        const removeImage = await unlinkAsync(`public/faculty/${req.body.previousImage}`)
+        const removeImage = await unlinkAsync(`public/publication/${req.body.previousFile}`)
         
       } catch (error) {
         console.log(error)
@@ -109,43 +109,16 @@ exports.updateFaculty = (req, res) => {
       } 
     }
 
-    Faculty.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
+    Publication.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
       if(err) return res.status(401).json('Error ocurred updating item')
       
-      Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+      Publication.find({}).populate(['faculty', 'component']).exec((err, list) => {
 
         if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
         return res.json(list)
 
       })
     })
-  })
-}
-
-exports.deleteFaculty = (req, res) => {
-  Faculty.findById(req.body.id, async (err, faculty) => {
-    if(err) return res.status(401).json('Error ocurred finding item in records')
-
-    if(faculty.image){
-      try {
-        const removeImage = await unlinkAsync(`public/faculty/${student.image}`)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-
-    Faculty.findByIdAndDelete(req.body.id, (err, response) => {
-      if(err) return res.status(401).json('Error ocurred deleting item')
-
-      Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
-        if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
-
-        return res.json(list)
-        
-      })
-      
-    })
-
   })
 }

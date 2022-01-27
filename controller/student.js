@@ -25,6 +25,7 @@ exports.createStudent = (req, res) => {
     if(req.body.previousImage) delete req.body.previousImage
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
+    if(req.file) req.body.image = req.file.filename
 
     for(let key in req.body){ 
 
@@ -40,7 +41,6 @@ exports.createStudent = (req, res) => {
       } 
     }
 
-    if(req.file) req.body.image = req.file.filename
 
     Student.findOne({name: req.body.name}, (err, found) => {
       console.log(err)
@@ -81,8 +81,12 @@ exports.updateStudent = (req, res) => {
       console.log(err)
       return res.status(500).json(err)
     }
-    
-    if(req.file) {
+  
+    for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
+    for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
+    if(req.file) req.body.image = req.file.filename
+
+    if(req.file && req.body.previousImage) {
       try {
         const removeImage = await unlinkAsync(`public/student/${req.body.previousImage}`)
         
@@ -90,11 +94,7 @@ exports.updateStudent = (req, res) => {
         console.log(error)
       }
     }
-
-    if(req.file) req.body.image = req.file.filename
-    for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
-    for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-
+    
     for(let key in req.body){ 
 
       if(typeof req.body[key] == 'object'){
