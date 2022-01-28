@@ -5,6 +5,7 @@ const Publication = require('../models/publication')
 const News = require('../models/news')
 const Slides = require('../models/slides')
 const Labs = require('../models/labs')
+const Equipment = require('../models/equipment')
 
 exports.clearComponentsFromFaculty = async (req, res, next) => {
   const { id } = req.body
@@ -143,6 +144,23 @@ exports.clearFacultyFromLabs = (req, res, next) => {
   const { id } = req.body
   
   Labs.updateMany({faculty: id}, {$pull: {faculty: id}}).exec( (err, results) => {
+    if (err) {
+      console.log(`[error] ${err}`);
+      // next(err);
+    } else {
+
+      req.id = id
+      next()
+    }
+  });
+  
+}
+
+exports.clearLabsFromEquipment = (req, res, next) => {
+
+  const { id } = req.body
+  
+  Equipment.updateMany({lab: id}, {$pull: {lab: id}}).exec( (err, results) => {
     if (err) {
       console.log(`[error] ${err}`);
       // next(err);
