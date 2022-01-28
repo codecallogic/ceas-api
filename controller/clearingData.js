@@ -2,6 +2,9 @@ const Faculty = require('../models/faculty')
 const Student = require('../models/student')
 const Component = require('../models/component')
 const Publication = require('../models/publication')
+const News = require('../models/news')
+const Slides = require('../models/slides')
+const Labs = require('../models/labs')
 
 exports.clearComponentsFromFaculty = async (req, res, next) => {
   const { id } = req.body
@@ -52,6 +55,38 @@ exports.clearComponentsFromPublications = (req, res, next) => {
   
 }
 
+exports.clearComponentsFromNews = (req, res, next) => {
+
+  const { id } = req.body
+  
+  News.updateMany({component: id}, {$pull: {component: id}}).exec( (err, results) => {
+    if (err) {
+      console.log(`[error] ${err}`);
+      // next(err);
+    } else {
+      req.id = id
+      next()
+    }
+  });
+  
+}
+
+exports.clearComponentsFromSlides = (req, res, next) => {
+
+  const { id } = req.body
+  
+  Slides.updateMany({component: id}, {$pull: {component: id}}).exec( (err, results) => {
+    if (err) {
+      console.log(`[error] ${err}`);
+      // next(err);
+    } else {
+      req.id = id
+      next()
+    }
+  });
+  
+}
+
 exports.clearFacultyFromComponents = async (req, res, next) => {
 
   const { id } = req.body
@@ -91,6 +126,23 @@ exports.clearFacultyFromPublications = (req, res, next) => {
   const { id } = req.body
   
   Publication.updateMany({faculty: id}, {$pull: {faculty: id}}).exec( (err, results) => {
+    if (err) {
+      console.log(`[error] ${err}`);
+      // next(err);
+    } else {
+
+      req.id = id
+      next()
+    }
+  });
+  
+}
+
+exports.clearFacultyFromLabs = (req, res, next) => {
+
+  const { id } = req.body
+  
+  Labs.updateMany({faculty: id}, {$pull: {faculty: id}}).exec( (err, results) => {
     if (err) {
       console.log(`[error] ${err}`);
       // next(err);
