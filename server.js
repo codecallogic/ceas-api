@@ -15,6 +15,9 @@ const staffRoutes = require('./routes/staff')
 const publicationRoutes = require('./routes/publications')
 const newsRoutes = require('./routes/news')
 const slideRoutes = require('./routes/slides')
+const labRoutes = require('./routes/labs')
+const equipmentRoutes = require('./routes/equipment')
+const formRoutes = require('./routes/forms')
 
 // MIDDLEWARE
 const { adminRequiresLogin } = require('./controller/auth')
@@ -32,6 +35,9 @@ app.use('/api/staff', staffRoutes)
 app.use('/api/publication', publicationRoutes)
 app.use('/api/news', newsRoutes)
 app.use('/api/slide', slideRoutes)
+app.use('/api/lab', labRoutes)
+app.use('/api/equipment', equipmentRoutes)
+app.use('/api/form', formRoutes)
 
 const port = process.env.PORT || 3001
 
