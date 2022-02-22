@@ -66,7 +66,7 @@ exports.createFaculty = (req, res) => {
 
 exports.getFaculty = (req, res) => {
   Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
-    if(err) return res.status(401).json('Error ocurred loading list items')
+    if(err) return res.status(400).json('Error ocurred loading list items')
     return res.json(list)
   })
 }
@@ -111,11 +111,11 @@ exports.updateFaculty = (req, res) => {
 
     Faculty.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
-      if(err) return res.status(401).json('Error ocurred updating item')
+      if(err) return res.status(400).json('Error ocurred updating item')
       
       Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
 
-        if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
+        if(err) return res.status(400).json('Item was updated, but there was an error loading table items')
         return res.json(list)
 
       })
@@ -125,7 +125,7 @@ exports.updateFaculty = (req, res) => {
 
 exports.deleteFaculty = (req, res) => {
   Faculty.findById(req.body.id, async (err, item) => {
-    if(err) return res.status(401).json('Error ocurred finding item in records')
+    if(err) return res.status(400).json('Error ocurred finding item in records')
 
     if(item.image){
       try {
@@ -136,10 +136,10 @@ exports.deleteFaculty = (req, res) => {
     }
 
     Faculty.findByIdAndDelete(req.body.id, (err, response) => {
-      if(err) return res.status(401).json('Error ocurred deleting item')
+      if(err) return res.status(400).json('Error ocurred deleting item')
 
       Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
-        if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+        if(err) return res.status(400).json('Item was deleted but there was an error loading table items')
 
         return res.json(list)
         
