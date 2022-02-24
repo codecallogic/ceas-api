@@ -18,6 +18,7 @@ const slideRoutes = require('./routes/slides')
 const labRoutes = require('./routes/labs')
 const equipmentRoutes = require('./routes/equipment')
 const formRoutes = require('./routes/forms')
+const navigationRoutes = require('./routes/navigation')
 
 // MIDDLEWARE
 const { adminRequiresLogin } = require('./controller/auth')
@@ -38,6 +39,7 @@ app.use('/api/slide', slideRoutes)
 app.use('/api/lab', labRoutes)
 app.use('/api/equipment', equipmentRoutes)
 app.use('/api/form', formRoutes)
+app.use('/api/navigation', navigationRoutes)
 
 const port = process.env.PORT || 3001
 
