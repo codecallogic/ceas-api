@@ -28,3 +28,14 @@ exports.adminLoginValidator = [
     return false
   })
 ]
+
+exports.resetPasswordValidator = [
+  check('password', 'Password must have a minimum of 8 characters, must contain one uppercase letter, one lowercase letter, a number, and one special character').custom( value => {
+    console.log(value)
+    let regex = /^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[@$.!%*#?&]).*$/g
+    if(regex.test(value)){
+      return true
+    }
+    return false
+  })
+]

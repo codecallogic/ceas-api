@@ -1,12 +1,12 @@
-exports.changeEmailTemplate = (newEmail, token) => {
+exports.forgotPasswordTemplate = (email, token) => {
   return {
     Source: `CEAS <${process.env.ADMIN_EMAIL}>` ,
     Destination: { 
-      ToAddresses: [newEmail]
+      ToAddresses: [email]
     },
     Message: {
       Subject: {
-        Data: 'Change Email',
+        Data: 'Change Password',
         Charset: 'UTF-8'
       },
       Body: {
@@ -186,7 +186,7 @@ exports.changeEmailTemplate = (newEmail, token) => {
             <!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
           </head>
           <body style="width: 100% !important; margin: 0; padding: 0; mso-line-height-rule: exactly; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; background-color: #f4f4f4" class="">
-            <div style="display: none !important; visibility: hidden; opacity: 0; overflow: hidden; mso-hide: all; height: 0; width: 0; max-height: 0; max-width: 0; font-size: 1px; line-height: 1px; color: #151515;">Please click on the link to  change your email.</div>
+            <div style="display: none !important; visibility: hidden; opacity: 0; overflow: hidden; mso-hide: all; height: 0; width: 0; max-height: 0; max-width: 0; font-size: 1px; line-height: 1px; color: #151515;">Please click on the link to reset your password.</div>
             <div style="display: none !important; visibility: hidden; opacity: 0; overflow: hidden; mso-hide: all; height: 0; width: 0; max-height: 0; max-width: 0; font-size: 1px; line-height: 1px;">
               ‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;‌&nbsp;
             </div>
@@ -219,7 +219,7 @@ exports.changeEmailTemplate = (newEmail, token) => {
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                                       <tbody>
                                         <tr>
-                                          <td class="pc-xs-fs-30 pc-xs-lh-42 pc-fb-font" style="font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 900; line-height: 46px; letter-spacing: -0.6px; color: #151515; text-align: center;" valign="top">Email Change</td>
+                                          <td class="pc-xs-fs-30 pc-xs-lh-42 pc-fb-font" style="font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 36px; font-weight: 900; line-height: 46px; letter-spacing: -0.6px; color: #151515; text-align: center;" valign="top">Password Change</td>
                                         </tr>
                                         <tr>
                                           <td height="10" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
@@ -227,7 +227,7 @@ exports.changeEmailTemplate = (newEmail, token) => {
                                       </tbody>
                                       <tbody>
                                         <tr>
-                                          <td class="pc-fb-font" style="font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 300; line-height: 28px; color: #1B1B1B; letter-spacing: -0.2px;" valign="top" align="center">We received a request to change the e-mail associated with your CEAS account. If this is correct, please confirm your new e-mail:</td>
+                                          <td class="pc-fb-font" style="font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 300; line-height: 28px; color: #1B1B1B; letter-spacing: -0.2px;" valign="top" align="center">We received a request to change the password associated with your CEAS account. If this is correct, click on the link below to change your password:</td>
                                         </tr>
                                         <tr>
                                           <td height="15" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
@@ -240,7 +240,7 @@ exports.changeEmailTemplate = (newEmail, token) => {
                                               <tbody>
                                                 <tr>
                                                   <td style="padding: 13px 17px; border-radius: 8px; background-color: #e63946; color: white;" bgcolor="#1f72eb" valign="top" align="center">
-                                                    <a href="${process.env.CLIENT_URL}/auth/email/${token}" style="line-height: 1.5; text-decoration: none; word-break: break-word; font-weight: 500; display: block; font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff;">Update Email</a>
+                                                    <a href="${process.env.CLIENT_URL}/auth/password/${token}" style="line-height: 1.5; text-decoration: none; word-break: break-word; font-weight: 500; display: block; font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 16px; color: #ffffff;">Change Password</a>
                                                   </td>
                                                 </tr>
                                               </tbody>
@@ -253,7 +253,7 @@ exports.changeEmailTemplate = (newEmail, token) => {
                                           <td height="15" style="font-size: 1px; line-height: 1px;">&nbsp;</td>
                                         </tr>
                                         <tr>
-                                          <td class="pc-fb-font" style="font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 300; line-height: 28px; color: #9B9B9B; text-align: center;" valign="top">If you didn't request this, you don't need to do anything. This link expires in 24 hours.<br><br>If you did NOT request to change your email, do not click on the button.&nbsp;<br><br>Sincerely, <br><br>CEAS Team</td>
+                                          <td class="pc-fb-font" style="font-family: 'Fira Sans', Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 300; line-height: 28px; color: #9B9B9B; text-align: center;" valign="top">If you didn't request this, you don't need to do anything. This link expires in an 1 hour.<br><br>If you did NOT request to change your email, do not click on the link.&nbsp;<br><br>Sincerely, <br><br>CEAS Team</td>
                                         </tr>
                                       </tbody>
                                     </table>

@@ -14,8 +14,9 @@ let storage = multer.diskStorage({
 let upload = multer({ storage: storage }).single('file')
 
 // EMAIL TEMPLATES
-const {changeEmailTemplate} = require('../templates/changeEmail')
-const {inviteAdmin} = require('../templates/inviteAdmin')
+const { changeEmailTemplate } = require('../templates/changeEmail')
+const { inviteAdmin } = require('../templates/inviteAdmin')
+const { forgotPasswordTemplate } = require('../templates/forgotPassword')
 
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -274,4 +275,55 @@ exports.deleteAdmin = (req, res) => {
 
   })
 
+}
+
+exports.forgotPassword = (req, res) => {
+  
+  User.findOne({email: req.body.email}, (err, user) => {
+    console.log(err)
+    if(!user) return res.status(400).json('Error occurred user does not exists')
+    
+    const token = jwt.sign({ username: user.username, email: user.email }, process.env.JWT_FORGOT_PASSWORD, { expiresIn: '60min'})
+    
+    const params = forgotPasswordTemplate(req.body.email, token)
+    
+    const sendEmail = ses.sendEmail(params).promise()
+
+    sendEmail
+    .then( (data) => {
+      return res.json(`Email was sent to ${req.body.email}`)
+    })
+    .catch( (err) => {
+      console.log(err)
+      return res.status(403).json('We could not verify your email, please try again later')
+    })
+    
+  })
+  
+}
+
+exports.resetPassword = (req, res) => {
+  
+  jwt.verify(req.body.token, process.env.JWT_FORGOT_PASSWORD, (err, response) => {
+    console.log(err)
+    if(err) return res.status(403).json('Invalid link, please try again.')
+    
+    User.findOne({email: response.email}, (err, found) => {
+      console.log(err)
+      if(err) return res.status(403).json('Error occurred user not found')
+
+      found.password = req.body.password
+      found.save((err, update) => {
+        console.log(err)
+        if(err) return res.status(403).json('Error occurred could not save password')
+
+        return res.json('Password was reset, please login with your new password')
+        
+      })
+
+      
+    })
+    
+  })
+  
 }
