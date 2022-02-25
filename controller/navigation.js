@@ -52,9 +52,12 @@ exports.createNavMenu = (req, res) => {
       newNavMenu.save((err, newMenu) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
-
+        
         NavMenu.find({}).populate('items').exec( (err, list) => {
           console.log(err)
+
+          global.io.emit('navigation', list)
+          
           if(err) return res.status(400).json('Error ocurred loading items')
           return res.json(list)
         })

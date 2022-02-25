@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const NavMenu = require('./models/navMenu')
 require('dotenv').config()
 require('./config/database')
 
@@ -43,4 +44,18 @@ app.use('/api/navigation', navigationRoutes)
 
 const port = process.env.PORT || 3001
 
-app.listen(port, () => console.log(`Server is running on port ${port}`))
+const server = app.listen(port, () => console.log(`Server is running on port ${port}`))
+
+const io = require('socket.io')(server, {cookie: false})
+global.io = io
+
+io.on('connection', async (socket) => {
+
+  NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, list) => {
+    console.log(err)
+    if(err) return socket.emit('navigation', null)
+    socket.emit('navigation', list)
+    
+  })
+
+})
