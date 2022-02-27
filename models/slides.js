@@ -7,6 +7,10 @@ const Slide = new Schema(
     type: String,
     default: ''
   },
+  title: {
+    type: String,
+    default: ''
+  },
   caption: {
     type: String,
     default: ''

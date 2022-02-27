@@ -52,13 +52,19 @@ exports.createSlide = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Slide.find({}).populate(['component']).exec((err, list) => {
+        Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
           console.log(err)
-          if(err) return res.status(400).json('Item was created, but there was an error table items')
+          if(err) return
+          global.io.emit('slides', list)
 
-          return res.json(list)
-        })
-        
+          Slide.find({}).populate(['component']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Item was created, but there was an error table items')
+  
+            return res.json(list)
+          })
+          
+        })        
       })
     })
   })
@@ -112,13 +118,21 @@ exports.updateSlide = (req, res) => {
     Slide.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
       if(err) return res.status(401).json('Error ocurred updating item')
-      
-      Slide.find({}).populate(['component']).exec((err, list) => {
 
-        if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
-        return res.json(list)
+      Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+        console.log(err)
+        if(err) return
+        global.io.emit('slides', list)
 
+        Slide.find({}).populate(['component']).exec((err, list) => {
+
+          if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
+          return res.json(list)
+  
+        })
+        
       })
+
     })
   })
 }
@@ -138,10 +152,17 @@ exports.deleteSlide = (req, res) => {
     Slide.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(401).json('Error ocurred deleting item')
 
-      Slide.find({}).populate(['component']).exec((err, list) => {
-        if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+      Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+        console.log(err)
+        if(err) return
+        global.io.emit('slides', list)
 
-        return res.json(list)
+        Slide.find({}).populate(['component']).exec((err, list) => {
+          if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+  
+          return res.json(list)
+          
+        })
         
       })
       

@@ -13,7 +13,11 @@ const NavMenu = new Schema(
   },
   items: [{
     type: Schema.Types.ObjectId, ref: 'NavItem'
-  }]
+  }],
+  order: {
+    type: String,
+    default: ''
+  }
 },
 {
     timestamps: true

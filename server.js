@@ -1,7 +1,11 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+
+//// SLIDES
 const NavMenu = require('./models/navMenu')
+const Slide = require('./models/slides')
+
 require('dotenv').config()
 require('./config/database')
 
@@ -53,8 +57,15 @@ io.on('connection', async (socket) => {
 
   NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, list) => {
     console.log(err)
-    if(err) return socket.emit('navigation', null)
+    if(err) return
     socket.emit('navigation', list)
+    
+  })
+
+  Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+    console.log(err)
+    if(err) return
+    socket.emit('slides', list)
     
   })
 
