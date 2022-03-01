@@ -53,11 +53,17 @@ exports.createNews = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        News.find({}).populate(['component']).exec((err, list) => {
-          console.log(err)
-          if(err) return res.status(400).json('Item was created, but there was an error table items')
+        News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+          if(err) return
+          global.io.emit('news', list)
 
-          return res.json(list)
+          News.find({}).populate(['component']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Item was created, but there was an error table items')
+  
+            return res.json(list)
+          })
+          
         })
         
       })
@@ -114,12 +120,19 @@ exports.updateNews = (req, res) => {
       console.log(err)
       if(err) return res.status(400).json('Error ocurred updating item')
       
-      News.find({}).populate(['component']).exec((err, list) => {
+      News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+        if(err) return
+        global.io.emit('news', list)
 
-        if(err) return res.status(400).json('Item was updated, but there was an error loading table items')
-        return res.json(list)
+        News.find({}).populate(['component']).exec((err, list) => {
+          console.log(err)
+          if(err) return res.status(400).json('Item was created, but there was an error table items')
 
+          return res.json(list)
+        })
+        
       })
+
     })
   })
 }
@@ -139,12 +152,18 @@ exports.deleteNews = (req, res) => {
     News.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(400).json('Error ocurred deleting item')
 
-      News.find({}).populate(['component']).exec((err, list) => {
-        if(err) return res.status(400).json('Item was deleted but there was an error loading table items')
+      News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+          if(err) return
+          global.io.emit('news', list)
 
-        return res.json(list)
-        
-      })
+          News.find({}).populate(['component']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Item was created, but there was an error table items')
+  
+            return res.json(list)
+          })
+          
+        })
       
     })
 

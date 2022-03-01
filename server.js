@@ -5,6 +5,8 @@ const cors = require('cors')
 //// SLIDES
 const NavMenu = require('./models/navMenu')
 const Slide = require('./models/slides')
+const Component = require('./models/component')
+const News = require('./models/news')
 
 require('dotenv').config()
 require('./config/database')
@@ -67,6 +69,18 @@ io.on('connection', async (socket) => {
     if(err) return
     socket.emit('slides', list)
     
+  })
+
+  Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
+    console.log(err)
+    if(err) return
+    socket.emit('components', list)
+
+  })
+
+  News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
+    if(err) return
+    socket.emit('news', list)
   })
 
 })

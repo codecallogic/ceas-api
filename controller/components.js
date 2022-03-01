@@ -45,11 +45,19 @@ exports.createComponent = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Component.find({}).populate('leader').exec( (err, list) => {
+        Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
           console.log(err)
-          if(err) return res.status(400).json('Error ocurred loading items')
-          return res.json(list)
+          if(err) return
+          global.io.emit('components', list)
+          
+          Component.find({}).populate('leader').exec( (err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Error ocurred loading items')
+            return res.json(list)
+          })
+          
         })
+
       })
     })
   })
@@ -95,10 +103,19 @@ exports.updateComponent = (req, res) => {
       Component.findByIdAndUpdate(req.body._id, req.body, {new: true}, (err, item) => {
         if(err) return res.status(401).json('Error occurred item was not updated')
 
-        Component.find({}).populate('leader').exec( (err, list) => {
-          if(err) return res.status(400).json('Error occurred loading items')
-          return res.json(list)
+        Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
+          console.log(err)
+          if(err) return
+          global.io.emit('components', list)
+          
+          Component.find({}).populate('leader').exec( (err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Error ocurred loading items')
+            return res.json(list)
+          })
+          
         })
+        
       })
     })
 
@@ -110,10 +127,17 @@ exports.deleteComponent = (req, res) => {
     console.log(err)
     if(err) res.status(400).json('Error occurred deleting item')
 
-    Component.find({}).populate('leader').exec((err, list) => {
+    Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
       console.log(err)
-      if(err) return res.status(400).json('Error occurred loading items')
-      return res.json(list)
+      if(err) return
+      global.io.emit('components', list)
+      
+      Component.find({}).populate('leader').exec( (err, list) => {
+        console.log(err)
+        if(err) return res.status(400).json('Error ocurred loading items')
+        return res.json(list)
+      })
+      
     })
 
   })
