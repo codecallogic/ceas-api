@@ -28,7 +28,7 @@ const formRoutes = require('./routes/forms')
 const navigationRoutes = require('./routes/navigation')
 
 // MIDDLEWARE
-const { adminRequiresLogin } = require('./controller/auth')
+
 app.use(morgan('dev'));
 app.use(express.json());
 // app.use('/files/storage/publication', adminRequiresLogin, express.static('public'))
