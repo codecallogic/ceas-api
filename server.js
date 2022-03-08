@@ -7,6 +7,9 @@ const NavMenu = require('./models/navMenu')
 const Slide = require('./models/slides')
 const Component = require('./models/component')
 const News = require('./models/news')
+const Faculty = require('./models/faculty')
+const Student = require('./models/student')
+const Lab = require('./models/labs')
 
 require('dotenv').config()
 require('./config/database')
@@ -83,4 +86,21 @@ io.on('connection', async (socket) => {
     socket.emit('news', list)
   })
 
+  Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+    if(err) return
+    socket.emit('faculty', list)
+  })
+
+  Student.find({}).populate([{path: 'advisor', select: '-_id'}, {path: 'component', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+    if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+    socket.emit('students', list)
+  })
+
+  Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+    console.log(err)
+    if(err) return
+    socket.emit('labs', list)
+
+  })
+  
 })

@@ -52,11 +52,17 @@ exports.createFaculty = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
-          console.log(err)
-          if(err) return res.status(400).json('Item was created, but there was an error table items')
+        Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+          if(err) return
+          global.io.emit('faculty', list)
 
-          return res.json(list)
+          Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Item was created, but there was an error table items')
+  
+            return res.json(list)
+          })
+          
         })
         
       })
@@ -112,12 +118,17 @@ exports.updateFaculty = (req, res) => {
     Faculty.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
       if(err) return res.status(400).json('Error ocurred updating item')
+
+      Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        if(err) return
+        global.io.emit('faculty', list)
       
-      Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+        Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
 
-        if(err) return res.status(400).json('Item was updated, but there was an error loading table items')
-        return res.json(list)
+          if(err) return res.status(400).json('Item was updated, but there was an error loading table items')
+          return res.json(list)
 
+        })
       })
     })
   })
@@ -138,13 +149,17 @@ exports.deleteFaculty = (req, res) => {
     Faculty.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(400).json('Error ocurred deleting item')
 
-      Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
-        if(err) return res.status(400).json('Item was deleted but there was an error loading table items')
+      Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        if(err) return
+        global.io.emit('faculty', list)
 
-        return res.json(list)
-        
+        Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+          if(err) return res.status(400).json('Item was deleted but there was an error loading table items')
+
+          return res.json(list)
+          
+        })
       })
-      
     })
 
   })

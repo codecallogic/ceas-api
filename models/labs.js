@@ -3,6 +3,10 @@ const Schema = mongoose.Schema
 
 const Lab = new Schema(
 {
+  icon: {
+    type: String,
+    default: '',
+  },
   image: {
     type: String,
     default: '',

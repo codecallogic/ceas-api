@@ -52,11 +52,16 @@ exports.createStudent = (req, res) => {
         console.log(err)
         if(err) return res.status(401).json('Error ocurred creating item')
 
-        Student.find({}).populate(['advisor', 'component']).exec((err, list) => {
-          console.log(err)
-          if(err) return res.status(401).json('Item was created, but there was an error loading the student data')
+        Student.find({}).populate([{path: 'advisor', select: '-_id'}, {path: 'component', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+          if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+          global.io.emit('students', list)
 
-          return res.json(list)
+          Student.find({}).populate(['advisor', 'component']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(401).json('Item was created, but there was an error loading the student data')
+
+            return res.json(list)
+          })
         })
         
       })
@@ -112,13 +117,20 @@ exports.updateStudent = (req, res) => {
     Student.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
       if(err) return res.status(401).json('Error ocurred updating item')
-      
-      Student.find({}).populate(['advisor', 'component']).exec((err, list) => {
 
-        if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
-        return res.json(list)
 
+      Student.find({}).populate([{path: 'advisor', select: '-_id'}, {path: 'component', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+        global.io.emit('students', list)
+
+        Student.find({}).populate(['advisor', 'component']).exec((err, list) => {
+          if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
+          return res.json(list)
+  
+        })
+        
       })
+      
     })
   })
 }
@@ -138,13 +150,17 @@ exports.deleteStudent = (req, res) => {
     Student.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(401).json('Error ocurred deleting item')
 
-      Student.find({}).populate(['advisor', 'component']).exec((err, list) => {
+      Student.find({}).populate([{path: 'advisor', select: '-_id'}, {path: 'component', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
-
-        return res.json(list)
+        global.io.emit('students', list)
         
+        Student.find({}).populate(['advisor', 'component']).exec((err, list) => {
+          if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+
+          return res.json(list)
+          
+        })
       })
-      
     })
 
   })

@@ -9,7 +9,7 @@ let storage = multer.diskStorage({
   filename: function(req, file, cb){ cb(null, file.originalname) }
 })
 
-let upload = multer({ storage: storage }).single('file')
+let upload = multer({ storage: storage }).fields([{name: 'file'}, {name: 'icon'}])
 
 exports.createLab = (req, res) => {
   upload(req, res, (err) => {
@@ -23,9 +23,11 @@ exports.createLab = (req, res) => {
     }
     
     if(req.body.previousImage) delete req.body.previousImage
+    if(req.body.previousIcon) delete req.body.previousIcon
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.image = req.file.filename
+    if(req.files.file) req.body.image = req.files.file[0].filename
+    if(req.files.icon) req.body.icon = req.files.icon[0].filename
 
     for(let key in req.body){ 
 
@@ -52,11 +54,18 @@ exports.createLab = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Lab.find({}).populate(['faculty']).exec((err, list) => {
+        Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
           console.log(err)
-          if(err) return res.status(400).json('Item was created, but there was an error table items')
-
-          return res.json(list)
+          if(err) return
+          global.io.emit('labs', list)
+      
+          Lab.find({}).populate(['faculty']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Item was created, but there was an error table items')
+  
+            return res.json(list)
+          })
+          
         })
         
       })
@@ -91,9 +100,19 @@ exports.updateLab = (req, res) => {
       }
     }
 
+    if(req.files.icon && req.body.previousIcon) {
+      try {
+        const removeImage = await unlinkAsync(`public/labs/${req.body.previousIcon}`)
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.image = req.file.filename
+    if(req.files.file) req.body.image = req.files.file[0].filename
+    if(req.files.icon) req.body.icon = req.files.icon[0].filename
 
     for(let key in req.body){ 
 
@@ -113,11 +132,17 @@ exports.updateLab = (req, res) => {
       console.log(err)
       if(err) return res.status(401).json('Error ocurred updating item')
       
-      Lab.find({}).populate(['faculty']).exec((err, list) => {
+      Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        console.log(err)
+        if(err) return
+        global.io.emit('labs', list)
+      
+        Lab.find({}).populate(['faculty']).exec((err, list) => {
 
-        if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
-        return res.json(list)
+          if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
+          return res.json(list)
 
+        })
       })
     })
   })
@@ -135,14 +160,28 @@ exports.deleteLab = (req, res) => {
       }
     }
 
+    if(item.icon){
+      try {
+        const removeImage = await unlinkAsync(`public/labs/${response.icon}`)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
     Lab.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(401).json('Error ocurred deleting item')
 
-      Lab.find({}).populate(['faculty']).exec((err, list) => {
-        if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
+      Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        console.log(err)
+        if(err) return
+        global.io.emit('labs', list)
+      
+        Lab.find({}).populate(['faculty']).exec((err, list) => {
+          if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
 
-        return res.json(list)
-        
+          return res.json(list)
+          
+        })
       })
       
     })
