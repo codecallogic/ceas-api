@@ -3,6 +3,14 @@ const Schema = mongoose.Schema
 
 const Component = new Schema(
 {
+  icon: {
+    type: String,
+    default: ''
+  },
+  image: {
+    type: String,
+    default: ''
+  },
   name: {
     type: String,
     default: ''

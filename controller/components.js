@@ -1,13 +1,16 @@
 const Component = require('../models/component')
 const multer = require('multer')
+const fs = require('fs')
+const { promisify } = require('util')
+const unlinkAsync = promisify(fs.unlink)
 
 // MULTER UPLOAD
 let storage = multer.diskStorage({
-  destination: function (req, file, cb){ cb(null, 'public/components') },
+  destination: function (req, file, cb){ cb(null, 'public/component') },
   filename: function(req, file, cb){ cb(null, file.originalname) }
 })
 
-let upload = multer({ storage: storage }).single('file')
+let upload = multer({ storage: storage }).fields([{name: 'file'}, {name: 'icon'}])
 
 exports.createComponent = (req, res) => {
   upload(req, res, async (err) => {
@@ -19,8 +22,13 @@ exports.createComponent = (req, res) => {
       return res.status(500).json(err)
     }
 
+    if(req.body.previousImage) delete req.body.previousImage
+    if(req.body.previousIcon) delete req.body.previousIcon
     for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
-
+    for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
+    if(req.files.file) req.body.image = req.files.file[0].filename
+    if(req.files.icon) req.body.icon = req.files.icon[0].filename
+    
     for(let key in req.body){ 
 
       if(typeof req.body[key] == 'object'){
@@ -80,8 +88,29 @@ exports.updateComponent = (req, res) => {
       return res.status(500).json(err)
     }
 
-    for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
+    if(req.files.file && req.body.previousImage) {
+      try {
+        const removeImage = await unlinkAsync(`public/component/${req.body.previousImage}`)
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
+    if(req.files.icon && req.body.previousIcon) {
+      try {
+        const removeImage = await unlinkAsync(`public/component/${req.body.previousIcon}`)
+        
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
+    for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
+    if(req.files.file) req.body.image = req.files.file[0].filename
+    if(req.files.icon) req.body.icon = req.files.icon[0].filename
+    
     for(let key in req.body){ 
 
       if(typeof req.body[key] == 'object'){
@@ -123,9 +152,25 @@ exports.updateComponent = (req, res) => {
 }
 
 exports.deleteComponent = (req, res) => {
-  Component.findByIdAndDelete(req.body.id, (err, response) => {
+  Component.findByIdAndDelete(req.body.id, async (err, response) => {
     console.log(err)
     if(err) res.status(400).json('Error occurred deleting item')
+
+    if(response.image){
+      try {
+        const removeImage = await unlinkAsync(`public/component/${response.image}`)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    if(response.icon){
+      try {
+        const removeImage = await unlinkAsync(`public/component/${response.icon}`)
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
     Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
       console.log(err)
