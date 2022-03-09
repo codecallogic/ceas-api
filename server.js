@@ -10,6 +10,7 @@ const News = require('./models/news')
 const Faculty = require('./models/faculty')
 const Student = require('./models/student')
 const Lab = require('./models/labs')
+const Equipment = require('./models/equipment')
 
 require('dotenv').config()
 require('./config/database')
@@ -100,6 +101,13 @@ io.on('connection', async (socket) => {
     console.log(err)
     if(err) return
     socket.emit('labs', list)
+
+  })
+
+  Equipment.find({}).populate([{path: 'lab', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+    console.log(err)
+    if(err) return 
+    socket.emit('equipment', list)
 
   })
   

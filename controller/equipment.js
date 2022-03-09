@@ -52,11 +52,18 @@ exports.createEquipment = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Equipment.find({}).populate(['lab']).exec((err, list) => {
+        Equipment.find({}).populate([{path: 'lab', select: '-_id'}]).select(['-_id']).exec((err, list) => {
           console.log(err)
-          if(err) return res.status(400).json('Item was created, but there was an error table items')
+          if(err) return 
+          global.io.emit('equipment', list)
 
-          return res.json(list)
+          Equipment.find({}).populate(['lab']).exec((err, list) => {
+            console.log(err)
+            if(err) return res.status(400).json('Item was created, but there was an error table items')
+  
+            return res.json(list)
+          })
+      
         })
         
       })
@@ -112,12 +119,18 @@ exports.updateEquipment = (req, res) => {
     Equipment.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
       if(err) return res.status(400).json('Error ocurred updating item')
+
+      Equipment.find({}).populate([{path: 'lab', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        console.log(err)
+        if(err) return 
+        global.io.emit('equipment', list)
       
-      Equipment.find({}).populate(['lab']).exec((err, list) => {
+        Equipment.find({}).populate(['lab']).exec((err, list) => {
 
-        if(err) return res.status(400).json('Item was updated, but there was an error loading table items')
-        return res.json(list)
+          if(err) return res.status(400).json('Item was updated, but there was an error loading table items')
+          return res.json(list)
 
+        })
       })
     })
   })
@@ -138,11 +151,17 @@ exports.deleteEquipment = (req, res) => {
     Equipment.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(400).json('Error ocurred deleting item')
 
-      Equipment.find({}).populate(['lab']).exec((err, list) => {
-        if(err) return res.status(400).json('Item was deleted but there was an error loading table items')
+      Equipment.find({}).populate([{path: 'lab', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        console.log(err)
+        if(err) return 
+        global.io.emit('equipment', list)
 
-        return res.json(list)
-        
+        Equipment.find({}).populate(['lab']).exec((err, list) => {
+          if(err) return res.status(400).json('Item was deleted but there was an error loading table items')
+
+          return res.json(list)
+          
+        })
       })
       
     })
