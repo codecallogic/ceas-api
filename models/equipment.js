@@ -18,6 +18,10 @@ const Equipment = new Schema(
   lab: [{
     type: Schema.Types.ObjectId, ref: 'Lab'
   }],
+  order: {
+    type: String,
+    default: ''
+  }
 },
 {
     timestamps: true

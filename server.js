@@ -11,6 +11,7 @@ const Faculty = require('./models/faculty')
 const Student = require('./models/student')
 const Lab = require('./models/labs')
 const Equipment = require('./models/equipment')
+const Staff = require('./models/staff')
 
 require('dotenv').config()
 require('./config/database')
@@ -108,6 +109,13 @@ io.on('connection', async (socket) => {
     console.log(err)
     if(err) return 
     socket.emit('equipment', list)
+
+  })
+
+  Staff.find({}).exec((err, list) => {
+    console.log(err)
+    if(err) return
+    socket.emit('staff', list)
 
   })
   
