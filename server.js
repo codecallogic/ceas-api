@@ -2,7 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 
-//// SLIDES
+//// MODELS
 const NavMenu = require('./models/navMenu')
 const Slide = require('./models/slides')
 const Component = require('./models/component')
@@ -12,6 +12,7 @@ const Student = require('./models/student')
 const Lab = require('./models/labs')
 const Equipment = require('./models/equipment')
 const Staff = require('./models/staff')
+const Publication = require('./models/publication')
 
 require('dotenv').config()
 require('./config/database')
@@ -116,6 +117,13 @@ io.on('connection', async (socket) => {
     console.log(err)
     if(err) return
     socket.emit('staff', list)
+
+  })
+
+  Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+    console.log(err)
+    if(err) return 
+    socket.emit('publication', list)
 
   })
   
