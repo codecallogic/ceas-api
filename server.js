@@ -13,6 +13,7 @@ const Lab = require('./models/labs')
 const Equipment = require('./models/equipment')
 const Staff = require('./models/staff')
 const Publication = require('./models/publication')
+const Section = require('./models/sections')
 
 require('dotenv').config()
 require('./config/database')
@@ -32,6 +33,7 @@ const labRoutes = require('./routes/labs')
 const equipmentRoutes = require('./routes/equipment')
 const formRoutes = require('./routes/forms')
 const navigationRoutes = require('./routes/navigation')
+const sectionRoutes = require('./routes/sections')
 
 // MIDDLEWARE
 
@@ -53,6 +55,7 @@ app.use('/api/lab', labRoutes)
 app.use('/api/equipment', equipmentRoutes)
 app.use('/api/form', formRoutes)
 app.use('/api/navigation', navigationRoutes)
+app.use('/api/section', sectionRoutes)
 
 const port = process.env.PORT || 3001
 
@@ -124,6 +127,13 @@ io.on('connection', async (socket) => {
     console.log(err)
     if(err) return 
     socket.emit('publication', list)
+
+  })
+
+  Section.find({}).select(['-_id']).exec((err, list) => {
+    console.log(err)
+    if(err) return 
+    socket.emit('section', list)
 
   })
   
