@@ -43,6 +43,7 @@ exports.createLab = (req, res) => {
       } 
     }
 
+    console.log(req.body)
 
     Lab.findOne({name: req.body.name}, (err, found) => {
       console.log(err)
@@ -54,12 +55,12 @@ exports.createLab = (req, res) => {
         console.log(err)
         if(err) return res.status(400).json('Error ocurred creating item')
 
-        Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+        Lab.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'equipment', select: '-_id'}]).select(['-_id']).exec((err, list) => {
           console.log(err)
           if(err) return
           global.io.emit('labs', list)
       
-          Lab.find({}).populate(['faculty']).exec((err, list) => {
+          Lab.find({}).populate(['faculty', 'equipment']).exec((err, list) => {
             console.log(err)
             if(err) return res.status(400).json('Item was created, but there was an error table items')
   
@@ -74,7 +75,7 @@ exports.createLab = (req, res) => {
 }
 
 exports.allLabs = (req, res) => {
-  Lab.find({}).populate(['faculty']).exec((err, list) => {
+  Lab.find({}).populate(['faculty', 'equipment']).exec((err, list) => {
     if(err) return res.status(400).json('Error ocurred loading list items')
     return res.json(list)
   })
@@ -132,12 +133,12 @@ exports.updateLab = (req, res) => {
       console.log(err)
       if(err) return res.status(401).json('Error ocurred updating item')
       
-      Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+      Lab.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'equipment', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return
         global.io.emit('labs', list)
       
-        Lab.find({}).populate(['faculty']).exec((err, list) => {
+        Lab.find({}).populate(['faculty', 'equipment']).exec((err, list) => {
 
           if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
           return res.json(list)
@@ -171,12 +172,12 @@ exports.deleteLab = (req, res) => {
     Lab.findByIdAndDelete(req.body.id, (err, response) => {
       if(err) return res.status(401).json('Error ocurred deleting item')
 
-      Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+      Lab.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'equipment', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return
         global.io.emit('labs', list)
       
-        Lab.find({}).populate(['faculty']).exec((err, list) => {
+        Lab.find({}).populate(['faculty', 'equipment']).exec((err, list) => {
           if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
 
           return res.json(list)

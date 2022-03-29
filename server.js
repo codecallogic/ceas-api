@@ -102,7 +102,7 @@ io.on('connection', async (socket) => {
     socket.emit('students', list)
   })
 
-  Lab.find({}).populate([{path: 'faculty', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+  Lab.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'equipment', select: '-_id'}]).select(['-_id']).exec((err, list) => {
     console.log(err)
     if(err) return
     socket.emit('labs', list)

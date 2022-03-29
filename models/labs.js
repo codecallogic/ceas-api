@@ -26,6 +26,9 @@ const Lab = new Schema(
   faculty: [{
     type: Schema.Types.ObjectId, ref: 'Faculty'
   }],
+  equipment: [{
+    type: Schema.Types.ObjectId, ref: 'Equipment'
+  }],
 },
 {
     timestamps: true

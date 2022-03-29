@@ -26,29 +26,32 @@ exports.createSection = (req, res) => {
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
     if(req.file) req.body.image = req.file.filename
-
     console.log(req.body)
-    
-    const newSection = new Section(req.body)
-
-    newSection.save((err, response) => {
+    Section.findOne({$and: [{path: req.body.path}, {order: req.body.order}]}, (err, found) => {
       console.log(err)
-      if(err) return res.status(400).json('Error ocurred creating item')
+      if(err) return res.status(403).json('Error occurred validating data')
+      if(found) return res.status(403).json('Error occurred item with that path and order exists')
+      const newSection = new Section(req.body)
 
-      Section.find({}).select(['-_id']).exec((err, list) => {
+      newSection.save((err, response) => {
         console.log(err)
-        if(err) return 
-        global.io.emit('section', list)
-        return res.json(list)
-    
-      })
+        if(err) return res.status(400).json('Error ocurred creating item')
+
+        Section.find({}).select(['-_id']).exec((err, list) => {
+          console.log(err)
+          if(err) return 
+          global.io.emit('section', list)
+          return res.json(list)
       
+        })
+        
+      })
     })
   })
 }
 
 exports.allSections = (req, res) => {
-  Section.find({}).exec((err, list) => {
+  Section.find({}).select(['-_id']).exec((err, list) => {
     if(err) return res.status(400).json('Error ocurred loading list items')
     return res.json(list)
   })
