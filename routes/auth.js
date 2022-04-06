@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, authorizedOnly, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail, forgotPassword, resetPassword} = require('../controller/auth')
+const {inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, authorizedOnly, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail, forgotPassword, resetPassword, logout} = require('../controller/auth')
 
 // GET ALL
 const {allAdmin} = require('../controller/auth')
@@ -21,6 +21,7 @@ router.post('/send-change-admin-email', adminRequiresLogin, sendChangeAdminEmail
 router.post('/update-admin-email',  adminRequiresLogin, adminUpdateEmail)
 router.post('/forgot-password', forgotPassword)
 router.post('/reset-password', resetPasswordValidator, runValidation, resetPassword)
+router.post('/logout', adminRequiresLogin, logout)
 
 // GET ALL
 router.get('/all-admin', adminRequiresLogin, allAdmin)

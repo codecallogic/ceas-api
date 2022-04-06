@@ -327,3 +327,9 @@ exports.resetPassword = (req, res) => {
   })
   
 }
+
+exports.logout = (req, res) => {
+  res.clearCookie('userAdmin')
+  res.clearCookie('accessTokenAdmin')
+  return res.json('Logged out');
+}
