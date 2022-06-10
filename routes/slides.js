@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {createSlide, allSlides, updateSlide, deleteSlide} = require('../controller/slides')
+const {createSlide, allSlides, allSlidesPublic, updateSlide, deleteSlide} = require('../controller/slides')
 
 // MIDDLEWARE
 const {adminRequiresLogin} = require('../controller/auth')
@@ -8,6 +8,7 @@ const {adminRequiresLogin} = require('../controller/auth')
 
 router.post('/create-slide', adminRequiresLogin, createSlide)
 router.get('/all-slides', adminRequiresLogin, allSlides)
+router.get('/all-slides-public', allSlidesPublic)
 router.post('/update-slide', adminRequiresLogin, updateSlide)
 router.post('/delete-slide', adminRequiresLogin, deleteSlide)
 

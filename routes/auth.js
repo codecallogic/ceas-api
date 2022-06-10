@@ -21,7 +21,7 @@ router.post('/send-change-admin-email', adminRequiresLogin, sendChangeAdminEmail
 router.post('/update-admin-email',  adminRequiresLogin, adminUpdateEmail)
 router.post('/forgot-password', forgotPassword)
 router.post('/reset-password', resetPasswordValidator, runValidation, resetPassword)
-router.post('/logout', adminRequiresLogin, logout)
+router.post('/logout', logout)
 
 // GET ALL
 router.get('/all-admin', adminRequiresLogin, allAdmin)

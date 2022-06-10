@@ -54,7 +54,7 @@ exports.createFaculty = (req, res) => {
 
         Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
           if(err) return
-          global.io.emit('faculty', list)
+          // global.io.emit('faculty', list)
 
           Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
             console.log(err)
@@ -72,6 +72,13 @@ exports.createFaculty = (req, res) => {
 
 exports.getFaculty = (req, res) => {
   Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
+    if(err) return res.status(400).json('Error ocurred loading list items')
+    return res.json(list)
+  })
+}
+
+exports.getFacultyPublic = (req, res) => {
+  Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
     if(err) return res.status(400).json('Error ocurred loading list items')
     return res.json(list)
   })
@@ -121,7 +128,7 @@ exports.updateFaculty = (req, res) => {
 
       Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         if(err) return
-        global.io.emit('faculty', list)
+        // global.io.emit('faculty', list)
       
         Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
 
@@ -151,7 +158,7 @@ exports.deleteFaculty = (req, res) => {
 
       Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         if(err) return
-        global.io.emit('faculty', list)
+        // global.io.emit('faculty', list)
 
         Faculty.find({}).populate(['componentOne', 'componentTwo', 'componentThree']).exec((err, list) => {
           if(err) return res.status(400).json('Item was deleted but there was an error loading table items')

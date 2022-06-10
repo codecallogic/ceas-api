@@ -55,7 +55,7 @@ exports.createNews = (req, res) => {
 
         News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
           if(err) return
-          global.io.emit('news', list)
+          // global.io.emit('news', list)
 
           News.find({}).populate(['component']).exec((err, list) => {
             console.log(err)
@@ -73,6 +73,13 @@ exports.createNews = (req, res) => {
 
 exports.allNews = (req, res) => {
   News.find({}).populate(['component']).exec((err, list) => {
+    if(err) return res.status(401).json('Error ocurred loading list items')
+    return res.json(list)
+  })
+}
+
+exports.allNewsPublic = (req, res) => {
+  News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
     if(err) return res.status(401).json('Error ocurred loading list items')
     return res.json(list)
   })
@@ -122,7 +129,7 @@ exports.updateNews = (req, res) => {
       
       News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
         if(err) return
-        global.io.emit('news', list)
+        // global.io.emit('news', list)
 
         News.find({}).populate(['component']).exec((err, list) => {
           console.log(err)
@@ -154,7 +161,7 @@ exports.deleteNews = (req, res) => {
 
       News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
           if(err) return
-          global.io.emit('news', list)
+          // global.io.emit('news', list)
 
           News.find({}).populate(['component']).exec((err, list) => {
             console.log(err)

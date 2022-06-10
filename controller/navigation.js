@@ -18,6 +18,14 @@ exports.allNavMenus = (req, res) => {
   })
 }
 
+exports.allNavMenusPublic = (req, res) => {
+  NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec((err, list) => {
+    console.log(err)
+    if(err) res.status(500).json('Error ocurred loading items')
+    res.json(list)
+  })
+}
+
 exports.createNavMenu = (req, res) => {
   upload(req, res, async (err) => {
     if (err instanceof multer.MulterError) {
@@ -56,7 +64,7 @@ exports.createNavMenu = (req, res) => {
         NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, socketList) => {
           console.log(err)
           if(err) return console.log(err)
-          global.io.emit('navigation', socketList)
+          // global.io.emit('navigation', socketList)
 
           NavMenu.find({}).populate('items').exec( (err, list) => {
           console.log(err)
@@ -109,7 +117,7 @@ exports.updateNavMenu = (req, res) => {
         NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, socketList) => {
           console.log(err)
           if(err) return console.log(err)
-          global.io.emit('navigation', socketList)
+          // global.io.emit('navigation', socketList)
 
           NavMenu.find({}).populate('items').exec( (err, list) => {
             if(err) return res.status(400).json('Error occurred loading items')
@@ -130,7 +138,7 @@ exports.deleteNavMenu = (req, res) => {
     NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, socketList) => {
       console.log(err)
       if(err) return console.log(err)
-      global.io.emit('navigation', socketList)
+      // global.io.emit('navigation', socketList)
 
       NavMenu.find({}).populate('items').exec((err, list) => {
         console.log(err)
@@ -175,7 +183,7 @@ exports.createNavItem = (req, res) => {
         NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, socketList) => {
           console.log(err)
           if(err) return console.log(err)
-          global.io.emit('navigation', socketList)
+          // global.io.emit('navigation', socketList)
 
           NavItem.find({}).exec( (err, list) => {
             console.log(err)
@@ -211,7 +219,7 @@ exports.updateNavItem = (req, res) => {
         NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, socketList) => {
           console.log(err)
           if(err) return console.log(err)
-          global.io.emit('navigation', socketList)
+          // global.io.emit('navigation', socketList)
 
           NavItem.find({}).exec( (err, list) => {
             if(err) return res.status(400).json('Error occurred loading items')
@@ -236,7 +244,7 @@ exports.deleteNavItem = (req, res) => {
     NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, socketList) => {
       console.log(err)
       if(err) return console.log(err)
-      global.io.emit('navigation', socketList)
+      // global.io.emit('navigation', socketList)
 
       NavItem.find({}).exec((err, list) => {
         console.log(err)

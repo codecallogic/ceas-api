@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {createNews, allNews, updateNews, deleteNews} = require('../controller/news')
+const {createNews, allNews, updateNews, deleteNews, allNewsPublic} = require('../controller/news')
 
 // MIDDLEWARE
 const {adminRequiresLogin} = require('../controller/auth')
@@ -8,6 +8,7 @@ const {adminRequiresLogin} = require('../controller/auth')
 
 router.post('/create-news', adminRequiresLogin, createNews)
 router.get('/all-news', adminRequiresLogin, allNews)
+router.get('/all-news-public', allNewsPublic)
 router.post('/update-news', adminRequiresLogin, updateNews)
 router.post('/delete-news', adminRequiresLogin, deleteNews)
 

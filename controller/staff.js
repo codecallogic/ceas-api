@@ -55,7 +55,7 @@ exports.createStaff = (req, res) => {
         Staff.find({}).exec((err, list) => {
           console.log(err)
           if(err) return res.status(400).json('Item was created, but there was an error table items')
-          global.io.emit('staff', list)
+          // global.io.emit('staff', list)
           return res.json(list)
         })
         
@@ -65,6 +65,13 @@ exports.createStaff = (req, res) => {
 }
 
 exports.allStaff = (req, res) => {
+  Staff.find({}).exec((err, list) => {
+    if(err) return res.status(401).json('Error ocurred loading list items')
+    return res.json(list)
+  })
+}
+
+exports.allStaffPublic = (req, res) => {
   Staff.find({}).exec((err, list) => {
     if(err) return res.status(401).json('Error ocurred loading list items')
     return res.json(list)
@@ -115,7 +122,7 @@ exports.updateStaff = (req, res) => {
       if(err) return res.status(401).json('Error ocurred updating item')
       
       Staff.find({}).exec((err, list) => {
-        global.io.emit('staff', list)
+        // global.io.emit('staff', list)
         if(err) return res.status(401).json('Item was updated, but there was an error loading table items')
         return res.json(list)
 
@@ -142,7 +149,7 @@ exports.deleteStaff = (req, res) => {
 
       Staff.find({}).exec((err, list) => {
         if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
-        global.io.emit('staff', list)
+        // global.io.emit('staff', list)
         return res.json(list)
         
       })

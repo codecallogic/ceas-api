@@ -40,7 +40,7 @@ exports.createSection = (req, res) => {
         Section.find({}).select(['-_id']).exec((err, list) => {
           console.log(err)
           if(err) return 
-          global.io.emit('section', list)
+          // global.io.emit('section', list)
 
           Section.find({}).exec((err, list) => {
 
@@ -86,7 +86,7 @@ exports.updateSection = (req, res) => {
       Section.find({}).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return 
-        global.io.emit('section', list)
+        // global.io.emit('section', list)
 
         Section.find({}).exec( (err, list) => {
 
@@ -102,6 +102,13 @@ exports.updateSection = (req, res) => {
 
 exports.allSections = (req, res) => {
   Section.find({}).exec((err, list) => {
+    if(err) return res.status(400).json('Error ocurred loading list items')
+    return res.json(list)
+  })
+}
+
+exports.allSectionsPublic = (req, res) => {
+  Section.find({}).select(['-_id']).exec((err, list) => {
     if(err) return res.status(400).json('Error ocurred loading list items')
     return res.json(list)
   })
@@ -126,7 +133,7 @@ exports.deleteSection = (req, res) => {
       Section.find({}).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return 
-        global.io.emit('section', list)
+        // global.io.emit('section', list)
 
         Section.find({}).exec((err, list) => {
           if(err) return res.status(400).json('Item was deleted but there was an error loading table items')

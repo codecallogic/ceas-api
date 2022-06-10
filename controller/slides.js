@@ -55,7 +55,7 @@ exports.createSlide = (req, res) => {
         Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
           console.log(err)
           if(err) return
-          global.io.emit('slides', list)
+          // global.io.emit('slides', list)
 
           Slide.find({}).populate(['component']).exec((err, list) => {
             console.log(err)
@@ -72,6 +72,13 @@ exports.createSlide = (req, res) => {
 
 exports.allSlides = (req, res) => {
   Slide.find({}).populate(['component']).exec((err, list) => {
+    if(err) return res.status(401).json('Error ocurred loading list items')
+    return res.json(list)
+  })
+}
+
+exports.allSlidesPublic = (req, res) => {
+  Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
     if(err) return res.status(401).json('Error ocurred loading list items')
     return res.json(list)
   })
@@ -122,7 +129,7 @@ exports.updateSlide = (req, res) => {
       Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return
-        global.io.emit('slides', list)
+        // global.io.emit('slides', list)
 
         Slide.find({}).populate(['component']).exec((err, list) => {
 
@@ -155,7 +162,7 @@ exports.deleteSlide = (req, res) => {
       Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return
-        global.io.emit('slides', list)
+        // global.io.emit('slides', list)
 
         Slide.find({}).populate(['component']).exec((err, list) => {
           if(err) return res.status(401).json('Item was deleted but there was an error loading table items')

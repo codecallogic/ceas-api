@@ -55,7 +55,7 @@ exports.createPublication = (req, res) => {
         Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
           console.log(err)
           if(err) return 
-          global.io.emit('publication', list)
+          // global.io.emit('publication', list)
           
           Publication.find({}).populate(['faculty', 'components']).exec((err, list) => {
             console.log(err)
@@ -72,6 +72,13 @@ exports.createPublication = (req, res) => {
 
 exports.allPublications = (req, res) => {
   Publication.find({}).populate(['faculty', 'components']).exec((err, list) => {
+    if(err) return res.status(401).json('Error ocurred loading list items')
+    return res.json(list)
+  })
+}
+
+exports.allPublicationsPublic = (req, res) => {
+  Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
     if(err) return res.status(401).json('Error ocurred loading list items')
     return res.json(list)
   })
@@ -128,7 +135,7 @@ exports.updatePublication = (req, res) => {
       Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return 
-        global.io.emit('publication', list)
+        // global.io.emit('publication', list)
       
         Publication.find({}).populate(['faculty', 'components']).exec((err, list) => {
           console.log(err)
@@ -159,7 +166,7 @@ exports.deletePublication = (req, res) => {
       Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         console.log(err)
         if(err) return 
-        global.io.emit('publication', list)
+        // global.io.emit('publication', list)
 
         Publication.find({}).populate(['faculty', 'components']).exec((err, list) => {
           if(err) return res.status(401).json('Item was deleted but there was an error loading table items')

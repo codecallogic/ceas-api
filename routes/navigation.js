@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 //// NAV MENUS
-const { allNavMenus, createNavMenu, updateNavMenu, deleteNavMenu } = require('../controller/navigation')
+const { allNavMenus, allNavMenusPublic, createNavMenu, updateNavMenu, deleteNavMenu } = require('../controller/navigation')
 
 //// NAV ITEMS
 const { allNavItems, createNavItem, updateNavItem, deleteNavItem } = require('../controller/navigation')
@@ -13,6 +13,7 @@ const { clearNavItemsFromNavMenu } = require('../controller/clearingData')
 
 //// NAV MENUS
 router.get('/all-nav-menus', adminRequiresLogin, allNavMenus)
+router.get('/all-nav-menus-public', allNavMenus)
 router.post('/create-nav-menu', adminRequiresLogin, createNavMenu)
 router.post('/update-nav-menu', adminRequiresLogin, updateNavMenu)
 router.post('/delete-nav-menu', adminRequiresLogin, deleteNavMenu)

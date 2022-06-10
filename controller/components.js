@@ -56,7 +56,7 @@ exports.createComponent = (req, res) => {
         Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
           console.log(err)
           if(err) return
-          global.io.emit('components', list)
+          // global.io.emit('components', list)
           
           Component.find({}).populate('leader').exec( (err, list) => {
             console.log(err)
@@ -73,6 +73,13 @@ exports.createComponent = (req, res) => {
 
 exports.allComponents = (req, res) => {
   Component.find({}).populate('leader').exec((err, list) => {
+    if(err) res.status(400).json('Error ocurred loading components')
+    res.json(list)
+  })
+}
+
+exports.allComponentsPublic = (req, res) => {
+  Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec((err, list) => {
     if(err) res.status(400).json('Error ocurred loading components')
     res.json(list)
   })
@@ -135,7 +142,7 @@ exports.updateComponent = (req, res) => {
         Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
           console.log(err)
           if(err) return
-          global.io.emit('components', list)
+          // global.io.emit('components', list)
           
           Component.find({}).populate('leader').exec( (err, list) => {
             console.log(err)
@@ -175,7 +182,7 @@ exports.deleteComponent = (req, res) => {
     Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
       console.log(err)
       if(err) return
-      global.io.emit('components', list)
+      // global.io.emit('components', list)
       
       Component.find({}).populate('leader').exec( (err, list) => {
         console.log(err)
