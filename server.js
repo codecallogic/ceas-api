@@ -41,7 +41,16 @@ app.use(morgan('dev'));
 app.use(express.json());
 // app.use('/files/storage/publication', adminRequiresLogin, express.static('public'))
 app.use('/files/storage', express.static('public'))
-app.use(cors({credentials: true, origin: process.env.CLIENT_URL}))
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "http://catsus.calstatela.edu",
+    "https://catsus.calstatela.edu",
+  ],
+  credentials: true,
+  origin: true,
+  origin: process.env.CLIENT_URL
+}))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
