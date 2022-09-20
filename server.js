@@ -46,6 +46,8 @@ app.use(cors({
     "http://localhost:3000",
     "http://catsus.calstatela.edu",
     "https://catsus.calstatela.edu",
+    "http://catsus.calstatela.edu:3001",
+    "https://catsus.calstatela.edu:3001"
   ],
   credentials: true,
   origin: true,
