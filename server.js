@@ -48,6 +48,8 @@ app.use(cors({
 
 
 const headers = (req, res, next) => {
+  console.log(req.headers)
+  console.log(req.headers.origin)
 	const origin = (req.headers.origin == 'http://localhost:3000') ? 'http://localhost:3000' : 'https://catsus.calstatela.edu'
 	res.setHeader('Access-Control-Allow-Origin', origin)
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
