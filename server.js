@@ -47,30 +47,30 @@ app.use(cors({
 }))
 
 
-const headers = (req, res, next) => {
-  console.log(req.headers)
-  console.log(req.headers.origin)
-	const origin = (req.headers.origin == 'http://localhost:3000') ? 'http://localhost:3000' : 'https://catsus.calstatela.edu'
-	res.setHeader('Access-Control-Allow-Origin', origin)
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
-	res.setHeader('Access-Control-Allow-Credentials', true)
-	next()
-}
+// const headers = (req, res, next) => {
+//   console.log(req.headers)
+//   console.log(req.headers.origin)
+// 	const origin = (req.headers.origin == 'http://localhost:3000') ? 'http://localhost:3000' : 'https://catsus.calstatela.edu'
+// 	res.setHeader('Access-Control-Allow-Origin', origin)
+// 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+// 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
+// 	res.setHeader('Access-Control-Allow-Credentials', true)
+// 	next()
+// }
 
-app.use('/api/auth', headers, authRoutes)
-app.use('/api/component', headers, componentRoutes)
-app.use('/api/faculty', headers, facultyRoutes)
-app.use('/api/student', headers, studentRoutes)
-app.use('/api/staff', headers, staffRoutes)
-app.use('/api/publication', headers, publicationRoutes)
-app.use('/api/news', headers, newsRoutes)
-app.use('/api/slide', headers, slideRoutes)
-app.use('/api/lab', headers, labRoutes)
-app.use('/api/equipment', headers, equipmentRoutes)
-app.use('/api/form', headers, formRoutes)
-app.use('/api/navigation', headers, navigationRoutes)
-app.use('/api/section', headers, sectionRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/component', componentRoutes)
+app.use('/api/faculty', facultyRoutes)
+app.use('/api/student', studentRoutes)
+app.use('/api/staff', staffRoutes)
+app.use('/api/publication', publicationRoutes)
+app.use('/api/news', newsRoutes)
+app.use('/api/slide', slideRoutes)
+app.use('/api/lab', labRoutes)
+app.use('/api/equipment', equipmentRoutes)
+app.use('/api/form', formRoutes)
+app.use('/api/navigation', navigationRoutes)
+app.use('/api/section', sectionRoutes)
 
 const port = process.env.PORT || 3001
 
