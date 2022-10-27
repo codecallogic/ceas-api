@@ -1,6 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const fs = require('fs')
 
 //// MODELS
 const NavMenu = require('./models/navMenu')
@@ -46,18 +47,6 @@ app.use(cors({
   origin: process.env.CLIENT_URL
 }))
 
-
-// const headers = (req, res, next) => {
-//   console.log(req.headers)
-//   console.log(req.headers.origin)
-// 	const origin = (req.headers.origin == 'http://localhost:3000') ? 'http://localhost:3000' : 'https://catsus.calstatela.edu'
-// 	res.setHeader('Access-Control-Allow-Origin', origin)
-// 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-// 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
-// 	res.setHeader('Access-Control-Allow-Credentials', true)
-// 	next()
-// }
-
 app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
 app.use('/api/faculty', facultyRoutes)
@@ -74,7 +63,17 @@ app.use('/api/section', sectionRoutes)
 
 const port = process.env.PORT || 3001
 
-const server = app.listen(port, () => console.log(`Server is running on port ${port}`))
+const connectionType = require(process.env.CONNECTION_TYPE)
+
+let key 
+
+if(process.env.CONNECTION_TYPE === 'https') key = fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key')
+
+if(process.env.CONNECTION_TYPE === 'https') cert = fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer')
+
+const server = process.env.CONNECTION_TYPE === 'http' ? connectionType.createServer(app) : connectionType.createServer({ key, cert }, app);
+
+server.listen(port, () => console.log(`Server is running on port ${port}`))
 
 // const io = require('socket.io')(server, {cookie: false})
 // global.io = io
