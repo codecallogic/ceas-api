@@ -65,7 +65,8 @@ const port = process.env.PORT || 3001
 
 const connectionType = require(process.env.CONNECTION_TYPE)
 
-let key 
+let key
+let cert 
 
 if(process.env.CONNECTION_TYPE === 'https') key = fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key')
 
