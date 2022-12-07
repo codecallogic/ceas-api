@@ -36,16 +36,33 @@ const formRoutes = require('./routes/forms')
 const navigationRoutes = require('./routes/navigation')
 const sectionRoutes = require('./routes/sections')
 
+// CORS
+const corsOptions = {
+  //To allow requests from client
+  origin: [
+     "http://localhost:3000",
+     "http://3.87.236.97:3000",
+     "http://127.0.0.1",
+     "https://catsus.calstatela.edu"
+  ],
+  credentials: true,
+  origin: true,
+  exposedHeaders: ["set-cookie"],
+};
+
 // MIDDLEWARE
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+  next();
+});
 
 app.use(morgan('dev'));
 app.use(express.json());
-// app.use('/files/storage/publication', adminRequiresLogin, express.static('public'))
 app.use('/files/storage', express.static('public'))
-app.use(cors({
-  credentials: true,
-  origin: process.env.CLIENT_URL
-}))
+app.use(cors(corsOptions))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
