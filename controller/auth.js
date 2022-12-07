@@ -133,45 +133,45 @@ exports.adminLogin = async (req, res) => {
           const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
           const {_id, username, email, role} = user
           const userAdmin = {_id, username, email, role}
-
-          // return res.status(202).cookie(
-          //     "accessTokenAdmin", token, {
-          //     sameSite: 'strict',
-          //     expires: new Date(Date.now() + (60 * 60 * 1000)),
-          //     httpOnly: true,
-          //     secure: false,
-          //     overwrite: true
-          // })
-          // .cookie("userAdmin", JSON.stringify(userAdmin), {
-          //   sameSite: 'strict',
-          //   expires: new Date(Date.now() + (60 * 60 * 1000)),
-          //   httpOnly: true,
-          //   secure: false,
-          //   overwrite: true
-          // })
+          console.log('Hello')
           return res.status(202).cookie(
               "accessTokenAdmin", token, {
-              sameSite: 'lax',
+              sameSite: 'strict',
               expires: new Date(Date.now() + (60 * 60 * 1000)),
               httpOnly: true,
-              secure: 'production',
-              proxy: true,
-              resave: false,
-              saveUninitizalized: true,
-              rolling: true,
+              secure: false,
               overwrite: true
           })
           .cookie("userAdmin", JSON.stringify(userAdmin), {
-            sameSite: 'lax',
+            sameSite: 'strict',
             expires: new Date(Date.now() + (60 * 60 * 1000)),
             httpOnly: true,
-            secure: 'production',
-            proxy: true,
-            resave: false,
-            saveUninitizalized: true,
-            rolling: true,
+            secure: false,
             overwrite: true
           })
+          // return res.status(202).cookie(
+          //     "accessTokenAdmin", token, {
+          //     sameSite: 'lax',
+          //     expires: new Date(Date.now() + (60 * 60 * 1000)),
+          //     httpOnly: true,
+          //     secure: 'production',
+          //     proxy: true,
+          //     resave: false,
+          //     saveUninitizalized: true,
+          //     rolling: true,
+          //     overwrite: true
+          // })
+          // .cookie("userAdmin", JSON.stringify(userAdmin), {
+          //   sameSite: 'lax',
+          //   expires: new Date(Date.now() + (60 * 60 * 1000)),
+          //   httpOnly: true,
+          //   secure: 'production',
+          //   proxy: true,
+          //   resave: false,
+          //   saveUninitizalized: true,
+          //   rolling: true,
+          //   overwrite: true
+          // })
           .send('User is logged in')
 
         }else{
