@@ -84,9 +84,9 @@ app.use('/api/section', sectionRoutes)
 const port = process.env.PORT || 4001
 const httpServer = http.createServer(app);
 
-httpServer.listen(port, () => {
-  console.log('HTTP Server running on port 4001');
-});
+// httpServer.listen(port, () => {
+//   console.log('HTTP Server running on port 4001');
+// });
 
 // serve the API with signed certificate on 443 (SSL/HTTPS) port
 const httpsServer = https.createServer({
@@ -94,7 +94,7 @@ const httpsServer = https.createServer({
   cert: fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer'),
 }, app);
 
-httpsServer.listen(443, () => {
+httpsServer.listen(port, () => {
   console.log('HTTPS Server running on port 443');
 });
 
