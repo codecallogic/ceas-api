@@ -40,8 +40,8 @@ const sectionRoutes = require('./routes/sections')
 const corsOptions = {
   //To allow requests from client
   origin: [
-     "http://localhost:3000",
-     "http://3.87.236.97:3000",
+     "http://localhost:3001",
+     "http://3.87.236.97:3001",
      "http://127.0.0.1",
      "https://catsus.calstatela.edu"
   ],
