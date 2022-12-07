@@ -172,7 +172,7 @@ exports.adminLogin = async (req, res) => {
           //   rolling: true,
           //   overwrite: true
           // })
-          // .send('User is logged in')
+          .send('User is logged in')
 
         }else{
           return res.status(401).json('Incorrect password')
