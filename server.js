@@ -43,6 +43,7 @@ const corsOptions = {
      "http://localhost:3001",
      "http://3.87.236.97:3001",
      "http://127.0.0.1",
+     "https://catsus.calstatela.edu:3001",
      "https://catsus.calstatela.edu"
   ],
   credentials: true,
@@ -80,19 +81,20 @@ app.use('/api/section', sectionRoutes)
 
 const port = process.env.PORT || 3001
 
-// const connectionType = require(process.env.CONNECTION_TYPE)
+const connectionType = require(process.env.CONNECTION_TYPE)
 
-// let key
-// let cert 
+let key
+let cert 
 
-// if(process.env.CONNECTION_TYPE === 'https') key = fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key')
+if(process.env.CONNECTION_TYPE === 'https') key = fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key')
 
-// if(process.env.CONNECTION_TYPE === 'https') cert = fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer')
-app.listen(port, () => console.log(`Server is running on port ${port}`))
+if(process.env.CONNECTION_TYPE === 'https') cert = fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer')
 
-// const server = process.env.CONNECTION_TYPE === 'http' ? connectionType.createServer(app) : connectionType.createServer({ key, cert }, app);
+// app.listen(port, () => console.log(`Server is running on port ${port}`))
 
-// server.listen(port, () => console.log(`Server is running on port ${port}`))
+const server = process.env.CONNECTION_TYPE === 'http' ? connectionType.createServer(app) : connectionType.createServer({ key, cert }, app);
+
+server.listen(port, () => console.log(`Server is running on port ${port}`))
 
 // const io = require('socket.io')(server, {cookie: false})
 // global.io = io
