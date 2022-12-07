@@ -138,14 +138,14 @@ exports.adminLogin = async (req, res) => {
               "accessTokenAdmin", token, {
               sameSite: 'lax',
               expires: new Date(Date.now() + (60 * 60 * 1000)),
-              httpOnly: true,
+              httpOnly: false,
               secure: true,
               overwrite: true
           })
           .cookie("userAdmin", JSON.stringify(userAdmin), {
             sameSite: 'lax',
             expires: new Date(Date.now() + (60 * 60 * 1000)),
-            httpOnly: true,
+            httpOnly: false,
             secure: true,
             overwrite: true
           })
