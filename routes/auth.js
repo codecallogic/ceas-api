@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, authorizedOnly, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail, forgotPassword, resetPassword, logout} = require('../controller/auth')
+const { inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, authorizedOnly, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail, forgotPassword, resetPassword, logout } = require('../controller/auth')
 
 // GET ALL
 const {allAdmin} = require('../controller/auth')
