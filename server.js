@@ -1,6 +1,8 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const https = require('https');
+const http = require('http');
 const fs = require('fs')
 
 //// MODELS
@@ -79,22 +81,39 @@ app.use('/api/form', formRoutes)
 app.use('/api/navigation', navigationRoutes)
 app.use('/api/section', sectionRoutes)
 
-const port = process.env.PORT || 3001
+const port = process.env.PORT || 4001
+const httpServer = http.createServer(app);
 
-const connectionType = require(process.env.CONNECTION_TYPE)
+httpServer.listen(port, () => {
+  console.log('HTTP Server running on port 4001');
+});
 
-let key
-let cert 
+// serve the API with signed certificate on 443 (SSL/HTTPS) port
+const httpsServer = https.createServer({
+  key: fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key'),
+  cert: fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer'),
+}, app);
 
-if(process.env.CONNECTION_TYPE === 'https') key = fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key')
+httpsServer.listen(443, () => {
+  console.log('HTTPS Server running on port 443');
+});
 
-if(process.env.CONNECTION_TYPE === 'https') cert = fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer')
+// const port = process.env.PORT || 3001
 
-// app.listen(port, () => console.log(`Server is running on port ${port}`))
+// const connectionType = require(process.env.CONNECTION_TYPE)
 
-const server = process.env.CONNECTION_TYPE === 'http' ? connectionType.createServer(app) : connectionType.createServer({ key, cert }, app);
+// let key
+// let cert 
 
-server.listen(port, () => console.log(`Server is running on port ${port}`))
+// if(process.env.CONNECTION_TYPE === 'https') key = fs.readFileSync('/var/www/html/catsus/server/keys/catsus.key')
+
+// if(process.env.CONNECTION_TYPE === 'https') cert = fs.readFileSync('/var/www/html/catsus/server/keys/catsus_calstatela_edu_cert.cer')
+
+// // app.listen(port, () => console.log(`Server is running on port ${port}`))
+
+// const server = process.env.CONNECTION_TYPE === 'http' ? connectionType.createServer(app) : connectionType.createServer({ key, cert }, app);
+
+// server.listen(port, () => console.log(`Server is running on port ${port}`))
 
 // const io = require('socket.io')(server, {cookie: false})
 // global.io = io
