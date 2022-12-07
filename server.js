@@ -95,7 +95,7 @@ const httpsServer = https.createServer({
 }, app);
 
 httpsServer.listen(port, () => {
-  console.log('HTTPS Server running on port 443');
+  console.log('HTTPS Server running on port 4001');
 });
 
 // const port = process.env.PORT || 3001
@@ -114,81 +114,3 @@ httpsServer.listen(port, () => {
 // const server = process.env.CONNECTION_TYPE === 'http' ? connectionType.createServer(app) : connectionType.createServer({ key, cert }, app);
 
 // server.listen(port, () => console.log(`Server is running on port ${port}`))
-
-// const io = require('socket.io')(server, {cookie: false})
-// global.io = io
-
-// io.on('connection', async (socket) => {
-
-  // NavMenu.find({}).populate({path: 'items', select: '-_id'}).select(['-_id']).exec( (err, list) => {
-  //   console.log(err)
-  //   if(err) return
-  //   socket.emit('navigation', list)
-    
-  // })
-
-  // Slide.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
-  //   console.log(err)
-  //   if(err) return
-  //   socket.emit('slides', list)
-    
-  // })
-
-  // Component.find({}).populate({path: 'leader', select: '-_id'}).select(['-_id']).exec( (err, list) => {
-  //   console.log(err)
-  //   if(err) return
-  //   socket.emit('components', list)
-
-  // })
-
-  // News.find({}).populate({path: 'component', select: '-_id'}).select(['-_id']).exec((err, list) => {
-  //   if(err) return
-  //   socket.emit('news', list)
-  // })
-
-  // Faculty.find({}).populate([{path: 'componentOne', select: '-_id'}, {path: 'componentTwo', select: '-_id'}, {path: 'componentThree', select: '-_id'}]).select(['-_id']).exec((err, list) => {
-  //   if(err) return
-  //   socket.emit('faculty', list)
-  // })
-
-  // Student.find({}).populate([{path: 'advisor', select: '-_id'}, {path: 'component', select: '-_id'}]).select(['-_id']).exec((err, list) => {
-  //   if(err) return res.status(401).json('Item was deleted but there was an error loading table items')
-  //   socket.emit('students', list)
-  // })
-
-  // Lab.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'equipment', select: '-_id'}]).select(['-_id']).exec((err, list) => {
-  //   console.log(err)
-  //   if(err) return
-  //   socket.emit('labs', list)
-
-  // })
-
-  // Equipment.find({}).populate([{path: 'lab', select: '-_id'}]).select(['-_id']).exec((err, list) => {
-  //   console.log(err)
-  //   if(err) return 
-  //   socket.emit('equipment', list)
-
-  // })
-
-  // Staff.find({}).exec((err, list) => {
-  //   console.log(err)
-  //   if(err) return
-  //   socket.emit('staff', list)
-
-  // })
-
-  // Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
-  //   console.log(err)
-  //   if(err) return 
-  //   socket.emit('publication', list)
-
-  // })
-
-  // Section.find({}).select(['-_id']).exec((err, list) => {
-  //   console.log(err)
-  //   if(err) return 
-  //   socket.emit('section', list)
-
-  // })
-  
-// })
