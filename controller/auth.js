@@ -133,7 +133,7 @@ exports.adminLogin = async (req, res) => {
           const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
           const {_id, username, email, role} = user
           const userAdmin = {_id, username, email, role}
-          console.log('Hello')
+  
           return res.status(202).cookie(
               "accessTokenAdmin", token, {
               sameSite: 'strict',
@@ -172,7 +172,7 @@ exports.adminLogin = async (req, res) => {
           //   rolling: true,
           //   overwrite: true
           // })
-          .send('User is logged in')
+          // .send('User is logged in')
 
         }else{
           return res.status(401).json('Incorrect password')
