@@ -139,14 +139,14 @@ exports.adminLogin = async (req, res) => {
               sameSite: 'strict',
               expires: new Date(Date.now() + (60 * 60 * 1000)),
               httpOnly: true,
-              secure: false,
+              secure: true,
               overwrite: true
           })
           .cookie("userAdmin", JSON.stringify(userAdmin), {
             sameSite: 'strict',
             expires: new Date(Date.now() + (60 * 60 * 1000)),
             httpOnly: true,
-            secure: false,
+            secure: true,
             overwrite: true
           })
           // return res.status(202).cookie(
