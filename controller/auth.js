@@ -149,30 +149,30 @@ exports.adminLogin = async (req, res) => {
             secure: false,
             overwrite: true
           })
-          return res.status(202).cookie(
-              "accessTokenAdmin", token, {
-              sameSite: 'lax',
-              expires: new Date(Date.now() + (60 * 60 * 1000)),
-              httpOnly: true,
-              secure: 'production',
-              proxy: true,
-              resave: false,
-              saveUninitizalized: true,
-              rolling: true,
-              overwrite: true
-          })
-          .cookie("userAdmin", JSON.stringify(userAdmin), {
-            sameSite: 'lax',
-            expires: new Date(Date.now() + (60 * 60 * 1000)),
-            httpOnly: true,
-            secure: 'production',
-            proxy: true,
-            resave: false,
-            saveUninitizalized: true,
-            rolling: true,
-            overwrite: true
-          })
-          .send('User is logged in')
+          // return res.status(202).cookie(
+          //     "accessTokenAdmin", token, {
+          //     sameSite: 'lax',
+          //     expires: new Date(Date.now() + (60 * 60 * 1000)),
+          //     httpOnly: true,
+          //     secure: 'production',
+          //     proxy: true,
+          //     resave: false,
+          //     saveUninitizalized: true,
+          //     rolling: true,
+          //     overwrite: true
+          // })
+          // .cookie("userAdmin", JSON.stringify(userAdmin), {
+          //   sameSite: 'lax',
+          //   expires: new Date(Date.now() + (60 * 60 * 1000)),
+          //   httpOnly: true,
+          //   secure: 'production',
+          //   proxy: true,
+          //   resave: false,
+          //   saveUninitizalized: true,
+          //   rolling: true,
+          //   overwrite: true
+          // })
+          // .send('User is logged in')
 
         }else{
           return res.status(401).json('Incorrect password')

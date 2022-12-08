@@ -20,6 +20,7 @@ const Section = require('./models/sections')
 
 require('dotenv').config()
 require('./config/database')
+process.env['NODE_TSL_REJECT_UNAUTHORIZED'] = 0
 
 const app = express()
 
@@ -82,7 +83,7 @@ app.use('/api/navigation', navigationRoutes)
 app.use('/api/section', sectionRoutes)
 
 const port = process.env.PORT || 4001
-const httpServer = http.createServer(app);
+// const httpServer = http.createServer(app);
 
 // httpServer.listen(port, () => {
 //   console.log('HTTP Server running on port 4001');
