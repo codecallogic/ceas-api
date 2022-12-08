@@ -4,6 +4,8 @@ const cors = require('cors')
 const https = require('https');
 const http = require('http');
 const fs = require('fs')
+let sslRootCAs = require('ssl-root-cas')
+sslRootCAs.inject()
 
 //// MODELS
 const NavMenu = require('./models/navMenu')
