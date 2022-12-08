@@ -122,12 +122,13 @@ exports.activateAdmin = (req, res) => {
 }
 
 exports.adminLogin = async (req, res) => {
+  console.log('DATE SENT', req.body)
   User.findOne({$or: [{username: req.body.username}, {email: req.body.username}]}, (err, user) => {
-    // console.log(err)
+    console.log('ERROR', err)
     if(err || !user) return res.status(401).json('Error ocurred, account does not exist.')
     if(user.role == 'main_admin' || user.role == 'regular_admin'){
       user.comparePassword(req.body.password, (err, isMatch) => {
-        // console.log(err)
+        console.log('ERROR', err)
 
         if(isMatch){
           const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
