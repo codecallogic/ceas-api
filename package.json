@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env NODE_EXTRA_CA_CERTS='/var/www/html/catsus/server/keys/catsus_calstatela_edu.pem' node index.js"
   },
   "keywords": [],
   "author": "",

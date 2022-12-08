@@ -20,7 +20,6 @@ const Section = require('./models/sections')
 
 require('dotenv').config()
 require('./config/database')
-process.env['NODE_TSL_REJECT_UNAUTHORIZED'] = 0
 
 const app = express()
 
