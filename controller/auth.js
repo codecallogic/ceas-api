@@ -1,8 +1,8 @@
 const User = require('../models/auth')
-const jwt = require('jsonwebtoken')
-const expressJWT = require('express-jwt')
+const jwtMethod = require('jsonwebtoken')
 const aws = require('aws-sdk')
 const { generatePassword } = require('../helpers/auth')
+const { expressjwt: jwt } = require("express-jwt");
 const multer = require('multer')
 
 // MULTER UPLOAD
@@ -47,7 +47,7 @@ exports.inviteAdmin = (req, res) => {
       console.log(err)
       if(user) return res.status(400).json('Error ocurred, username or email exists.')
       
-      const token = jwt.sign(req.body, process.env.JWT_INVITATION_SECRET, {expiresIn: '24hr'})
+      const token = jwtMethod.sign(req.body, process.env.JWT_INVITATION_SECRET, {expiresIn: '24hr'})
 
       const params = inviteAdmin(req.body.email, token, req.body.firstName, req.body.username, req.body.password)
       
@@ -73,7 +73,7 @@ exports.inviteAdmin = (req, res) => {
 
 exports.activateAdmin = (req, res) => {
 
-  jwt.verify(req.body.token, process.env.JWT_INVITATION_SECRET, function(err, decoded){
+  jwtMethod.verify(req.body.token, process.env.JWT_INVITATION_SECRET, function(err, decoded){
     if(err){
       console.log(err)
       return res.status(400).json('This url has expired, please try again later.')
@@ -93,7 +93,7 @@ exports.activateAdmin = (req, res) => {
         }
 
         if(admin){
-          const token = jwt.sign({id: admin._id, role: admin.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
+          const token = jwtMethod.sign({id: admin._id, role: admin.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
           const {_id, username, email, role} = admin
           const userAdmin = {_id, username, email, role}
 
@@ -131,7 +131,7 @@ exports.adminLogin = async (req, res) => {
         console.log('ERROR', err)
 
         if(isMatch){
-          const token = jwt.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
+          const token = jwtMethod.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
           const {_id, username, email, role} = user
           const userAdmin = {_id, username, email, role}
   
@@ -186,7 +186,7 @@ exports.adminLogin = async (req, res) => {
   })
 }
 
-exports.adminRequiresLogin = expressJWT({ secret: process.env.JWT_SECRET_LOGIN, algorithms: ['HS256']})
+exports.adminRequiresLogin = jwt({ secret: process.env.JWT_SECRET_LOGIN, algorithms: ['HS256']})
 
 exports.readAdmin = (req, res) => {
   User.findById(req.user.id, (err, user) => {
@@ -250,7 +250,7 @@ exports.updateAdmin= (req, res) => {
 }
 
 exports.sendChangeAdminEmail = (req, res) => {
-  const token = jwt.sign({username: req.body.account.username, oldEmail: req.body.account.email, newEmail: req.body.user.email, id: req.body.account.id}, process.env.JWT_CHANGE_EMAIL, {expiresIn: '24hr'})
+  const token = jwtMethod.sign({username: req.body.account.username, oldEmail: req.body.account.email, newEmail: req.body.user.email, id: req.body.account.id}, process.env.JWT_CHANGE_EMAIL, {expiresIn: '24hr'})
 
   const params = changeEmailTemplate(req.body.user.email, token)
 
@@ -268,7 +268,7 @@ exports.sendChangeAdminEmail = (req, res) => {
 }
 
 exports.adminUpdateEmail = (req, res) => {
-  jwt.verify(req.body.token, process.env.JWT_CHANGE_EMAIL, (err, decoded) => {
+  jwtMethod.verify(req.body.token, process.env.JWT_CHANGE_EMAIL, (err, decoded) => {
     if(err) return res.status(401).json('URL is expired, please submit another request')
     
     User.findByIdAndUpdate(decoded.id, {email: decoded.newEmail}, {new: true}, (err, user) => {
@@ -307,7 +307,7 @@ exports.forgotPassword = (req, res) => {
     console.log(err)
     if(!user) return res.status(400).json('Error occurred user does not exists')
     
-    const token = jwt.sign({ username: user.username, email: user.email }, process.env.JWT_FORGOT_PASSWORD, { expiresIn: '60min'})
+    const token = jwtMethod.sign({ username: user.username, email: user.email }, process.env.JWT_FORGOT_PASSWORD, { expiresIn: '60min'})
     
     const params = forgotPasswordTemplate(req.body.email, token)
     
@@ -328,7 +328,7 @@ exports.forgotPassword = (req, res) => {
 
 exports.resetPassword = (req, res) => {
   
-  jwt.verify(req.body.token, process.env.JWT_FORGOT_PASSWORD, (err, response) => {
+  jwtMethod.verify(req.body.token, process.env.JWT_FORGOT_PASSWORD, (err, response) => {
     console.log(err)
     if(err) return res.status(403).json('Invalid link, please try again.')
     
