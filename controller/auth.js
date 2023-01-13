@@ -2,7 +2,7 @@ const User = require('../models/auth')
 const jwtMethod = require('jsonwebtoken')
 const aws = require('aws-sdk')
 const { generatePassword } = require('../helpers/auth')
-const { expressjwt: jwt } = require("express-jwt");
+const { expressjwt: jwt } = require("express-jwt")
 const multer = require('multer')
 
 // MULTER UPLOAD
