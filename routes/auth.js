@@ -3,10 +3,10 @@ const router = express.Router()
 const { inviteAdmin, activateAdmin, adminLogin, adminRequiresLogin, authorizedOnly, readAdmin, updateAdmin, sendChangeAdminEmail, adminUpdateEmail, forgotPassword, resetPassword, logout } = require('../controller/auth')
 
 // GET ALL
-const {allAdmin} = require('../controller/auth')
+const { allAdmin } = require('../controller/auth')
 
 // ADMIN USERS CRUD 
-const {deleteAdmin} = require('../controller/auth')
+const { deleteAdmin } = require('../controller/auth')
 
 // MIDDLEWARE
 const { adminLoginValidator, resetPasswordValidator } = require('../validators/auth')

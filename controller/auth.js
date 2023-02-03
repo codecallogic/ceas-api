@@ -167,7 +167,8 @@ exports.adminLogin = async (req, res) => {
 exports.adminRequiresLogin = jwt({ secret: process.env.JWT_SECRET_LOGIN, algorithms: ['HS256']})
 
 exports.readAdmin = (req, res) => {
-  User.findById(req.user.id, (err, user) => {
+  
+  User.findById(req.auth.id, (err, user) => {
     console.log('ERROR', err)
     if(err) return res.status(400).json('User does not exists in our records.')
   
