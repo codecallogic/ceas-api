@@ -122,7 +122,7 @@ exports.activateAdmin = (req, res) => {
 }
 
 exports.adminLogin = async (req, res) => {
-  console.log('DATE SENT', req.body)
+
   User.findOne({$or: [{username: req.body.username}, {email: req.body.username}]}, (err, user) => {
     console.log('ERROR', err)
     if(err || !user) return res.status(401).json('Error ocurred, account does not exist.')
@@ -132,9 +132,14 @@ exports.adminLogin = async (req, res) => {
 
         if(isMatch){
           const token = jwtMethod.sign({id: user._id, role: user.role}, process.env.JWT_SECRET_LOGIN, {expiresIn: '60min', algorithm: 'HS256'})
+
           const {_id, username, email, role} = user
           const userAdmin = {_id, username, email, role}
-  
+
+          let cookieTime = new Date(Date.now() + (60 * 60 * 1000))
+
+          const cookieOptions = ";expires="+cookieTime+"; Max-Age=3600; HttpOnly";
+          
           return res.status(202).cookie(
               "accessTokenAdmin", token, {
               sameSite: 'strict',
@@ -145,7 +150,8 @@ exports.adminLogin = async (req, res) => {
             sameSite: 'strict',
             expires: new Date(Date.now() + (60 * 60 * 1000)),
             httpOnly: true
-          })
+          }).send(userAdmin)
+
         }else{
           return res.status(401).json('Incorrect password')
         }
@@ -155,6 +161,7 @@ exports.adminLogin = async (req, res) => {
       return res.status(401).json('Authorized personnel only, access denied')
     }
   })
+
 }
 
 exports.adminRequiresLogin = jwt({ secret: process.env.JWT_SECRET_LOGIN, algorithms: ['HS256']})

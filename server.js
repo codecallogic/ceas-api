@@ -1,11 +1,7 @@
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
-const https = require('https');
-const http = require('http');
-const fs = require('fs')
-let sslRootCAs = require('ssl-root-cas')
-sslRootCAs.inject()
+const bodyParser = require('body-parser')
 
 //// MODELS
 const NavMenu = require('./models/navMenu')
@@ -44,6 +40,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use('/files/storage', express.static('public'))
 app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }))
+// app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use('/api/auth', authRoutes)
 app.use('/api/component', componentRoutes)
