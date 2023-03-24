@@ -1,6 +1,6 @@
 exports.inviteAdmin = (email, token, firstName, username, password) => {
   return {
-    Source: `CATSUS <arclamsalliance@gmail.com>`,
+    Source: `CATSUS <catsus@calstatela.edu>`,
     Destination: {
       ToAddresses: [email],
     },
