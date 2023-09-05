@@ -125,12 +125,11 @@ exports.updatePublication = (req, res) => {
       // }
 
     }
-
-    // console.log(req.body)
     
     Publication.findByIdAndUpdate(req.body._id, req.body).exec((err, updated) => {
       console.log(err)
       if(err) return res.status(400).json('Error ocurred updating item')
+      console.log(updated)
 
       Publication.find({}).populate([{path: 'faculty', select: '-_id'}, {path: 'components', select: '-_id'}]).select(['-_id']).exec((err, list) => {
         console.log(err)
