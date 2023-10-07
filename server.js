@@ -38,7 +38,7 @@ const sectionRoutes = require('./routes/sections')
 
 app.use(morgan('dev'));
 app.use(express.json());
-app.use('/files/storage', express.static('public'))
+app.use('/files/storage', express.static('public', { maxAge: 31536000 } ))
 app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }))
 // app.use(bodyParser.urlencoded({ extended: false }))
 
