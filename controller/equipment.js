@@ -79,7 +79,7 @@ exports.allEquipment = (req, res) => {
 }
 
 exports.allEquipmentPublic = (req, res) => {
-  Equipment.find({}).populate([{path: 'lab', select: '-_id'}]).select(['-_id']).exec((err, list) => {
+  Equipment.find({}).populate(['lab']).select(['-_id']).exec((err, list) => {
     if(err) return res.status(400).json('Error ocurred loading list items')
     return res.json(list)
   })
