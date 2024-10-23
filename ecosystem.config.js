@@ -13,7 +13,7 @@ module.exports = {
       repo : 'git@github.com:codecallogic/ceas-api.git',
       path : '/home/ubuntu/server',
       'pre-deploy-local': '',
-      'post-deploy' : 'source ~/.nvm/nvm.sh && nvm use 14.21.3 && npm install --legacy-peer-deps && pm2 reload ecosystem.config.js --env production',
+      'post-deploy' : 'source ~/.nvm/nvm.sh && nvm use 18.18.2 && npm install --legacy-peer-deps && pm2 reload ecosystem.config.js --env production',
       'pre-setup': '',
       'ssh_options': 'ForwardAgent=yes'
     }
