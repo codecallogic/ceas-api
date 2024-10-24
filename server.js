@@ -56,6 +56,6 @@ app.use('/api/form', formRoutes)
 app.use('/api/navigation', navigationRoutes)
 app.use('/api/section', sectionRoutes)
 
-const port = process.env.PORT || 4001
+const port = process.env.PORT || 3001
 
 const server = app.listen(port, () => console.log(`Server is running on port ${port}`))
