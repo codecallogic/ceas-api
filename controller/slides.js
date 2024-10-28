@@ -1,15 +1,39 @@
 const multer = require('multer')
 const Slide = require('../models/slides')
-const fs = require('fs')
-const { promisify } = require('util')
-const unlinkAsync = promisify(fs.unlink)
+const { S3 } = require('@aws-sdk/client-s3')
+const multerS3 = require('multer-s3')
+const aws = require('aws-sdk')
 
-let storage = multer.diskStorage({
-  destination: function (req, file, cb){ cb(null, 'public/slides') },
-  filename: function(req, file, cb){ cb(null, file.originalname) }
+// Configure AWS SDK
+const s3 = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  region: process.env.AWS_REGION,
 })
 
-let upload = multer({ storage: storage }).single('file')
+// S3 delete config
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+})
+
+// MULTER S3 STORAGE
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_S3_BUCKET_NAME,
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: function (req, file, cb) {
+      cb(null, `slides/${Date.now().toString()}-${file.originalname}`)
+    }
+  })
+}).fields([{ name: 'file' }, { name: 'icon' }])
+
+const S3aws = new aws.S3()
 
 exports.createSlide = (req, res) => {
   upload(req, res, (err) => {
@@ -25,7 +49,7 @@ exports.createSlide = (req, res) => {
     if(req.body.previousImage) delete req.body.previousImage
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.image = req.file.filename
+    if(req.files.file) req.body.image = req.files.file[0].location
 
     for(let key in req.body){ 
 
@@ -95,18 +119,35 @@ exports.updateSlide = (req, res) => {
       return res.status(500).json(err)
     }
     
-    if(req.file && req.body.previousImage) {
+    // Parse req.body fields only if they are JSON strings
+    for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
+    
+    if(req.files.file && req.body.previousImage) {
+      
+      let location = req.body.previousImage.split("/slides")[1]
+      
+      location = 'slides' + location
+      
+      let params = {
+        Bucket: 'catsus', 
+        Key: location
+      }
+      
       try {
-        const removeImage = await unlinkAsync(`public/slides/${req.body.previousImage}`)
+        
+        S3aws.deleteObject(params, (err, data) => {
+          console.log(err)
+          if (err) return { message: err }
+        })
         
       } catch (error) {
         console.log(error)
       }
+      
     }
 
-    for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.image = req.file.filename
+    if(req.files.file) req.body.image = req.files.file[0].location
 
     for(let key in req.body){ 
 
@@ -149,11 +190,27 @@ exports.deleteSlide = (req, res) => {
     if(err) return res.status(401).json('Error ocurred finding item in records')
 
     if(item.image){
+    
+      let location = item.image.split("/slides")[1]
+      console.log('LOCATION IMAGE', location)
+      location = 'slides' + location
+      
+      let params = {
+        Bucket: 'catsus', 
+        Key: location
+      }
+      
       try {
-        const removeImage = await unlinkAsync(`public/slides/${item.image}`)
+        
+        S3aws.deleteObject(params, (err, data) => {
+          console.log(err)
+          if (err) return { message: err }
+        })
+        
       } catch (error) {
         console.log(error)
       }
+      
     }
 
     Slide.findByIdAndDelete(req.body.id, (err, response) => {

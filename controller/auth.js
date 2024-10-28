@@ -178,6 +178,7 @@ exports.readAdmin = (req, res) => {
       return res.status(400).json('User does not exists in our records.')
     }
   })
+
 }
 
 exports.checkTokenExpiration = (req, res, next) => {

@@ -1,15 +1,39 @@
 const Publication = require('../models/publication')
 const multer = require('multer')
-const fs = require('fs')
-const { promisify } = require('util')
-const unlinkAsync = promisify(fs.unlink)
+const { S3 } = require('@aws-sdk/client-s3')
+const multerS3 = require('multer-s3')
+const aws = require('aws-sdk')
 
-let storage = multer.diskStorage({
-  destination: function (req, file, cb){ cb(null, 'public/publication') },
-  filename: function(req, file, cb){ cb(null, file.originalname) }
+// Configure AWS SDK
+const s3 = new S3({
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  region: process.env.AWS_REGION,
 })
 
-let upload = multer({ storage: storage }).single('file')
+// S3 delete config
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION
+})
+
+// MULTER S3 STORAGE
+const upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_S3_BUCKET_NAME,
+    acl: 'public-read',
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: function (req, file, cb) {
+      cb(null, `publication/${Date.now().toString()}-${file.originalname}`)
+    }
+  })
+}).fields([{ name: 'file' }, { name: 'icon' }])
+
+const S3aws = new aws.S3()
 
 exports.createPublication = (req, res) => {
   upload(req, res, (err) => {
@@ -21,25 +45,13 @@ exports.createPublication = (req, res) => {
       console.log(err)
       return res.status(500).json(err)
     }
+
     
     if(req.body.previousFile) delete req.body.previousFile
     for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.file = req.file.filename
-    
-    // for(let key in req.body){ 
+    if(req.files.file) req.body.file = req.files.file[0].location
 
-    //   if(typeof req.body[key] == 'object'){
-
-    //     if(req.body[key].length > 0){
-    //       if(req.body[key][0]._id) req.body[key] = req.body[key][0]._id
-    //     }
-
-    //     if(typeof req.body[key] == 'object' && !Array.isArray(req.body[key])){
-    //       if(req.body[key]) req.body[key] = req.body[key]._id
-    //     }
-    //   } 
-    // }
 
     Publication.findOne({title: req.body.title}, (err, found) => {
       console.log(err)
@@ -95,18 +107,35 @@ exports.updatePublication = (req, res) => {
       return res.status(500).json(err)
     }
 
-    if(req.file && req.body.previousFile) {
+    // Parse req.body fields only if they are JSON strings
+    for(let key in req.body){ req.body[key] = JSON.parse(req.body[key]) }
+    
+    if(req.files.file && req.body.previousFile) {
+      
+      let location = req.body.previousFile.split("/publication")[1]
+      
+      location = 'publication' + location
+      
+      let params = {
+        Bucket: 'catsus', 
+        Key: location
+      }
+      
       try {
-        const removeImage = await unlinkAsync(`public/publication/${req.body.previousFile}`)
+        
+        S3aws.deleteObject(params, (err, data) => {
+          console.log(err)
+          if (err) return { message: err }
+        })
         
       } catch (error) {
-        console.log('UNLINK ERROR', error)
+        console.log(error)
       }
+      
     }
 
-    for(let key in req.body){ if(req.body[key]) req.body[key] = JSON.parse(req.body[key]) }
     for(let key in req.body){ if(!req.body[key]) delete req.body[key]}
-    if(req.file) req.body.file = req.file.filename
+    if(req.files.file) req.body.file = req.files.file[0].location
 
     for(let key in req.body){ 
 
@@ -152,11 +181,27 @@ exports.deletePublication = (req, res) => {
     if(err) return res.status(401).json('Error ocurred finding item in records')
 
     if(item.file){
+    
+      let location = item.file.split("/publication")[1]
+      console.log('LOCATION IMAGE', location)
+      location = 'publication' + location
+      
+      let params = {
+        Bucket: 'catsus', 
+        Key: location
+      }
+      
       try {
-        const removeImage = await unlinkAsync(`public/publication/${item.file}`)
+        
+        S3aws.deleteObject(params, (err, data) => {
+          console.log(err)
+          if (err) return { message: err }
+        })
+        
       } catch (error) {
         console.log(error)
       }
+      
     }
 
     Publication.findByIdAndDelete(req.body.id, (err, response) => {
