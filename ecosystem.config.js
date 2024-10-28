@@ -2,7 +2,7 @@ module.exports = {
   apps : [{
     name   : "server",
     script : './server.js',
-    interpreter: "~/.nvm/versions/node/v18.18.2/bin/node"  // Explicitly set Node.js version for PM2
+    interpreter: "~/.nvm/versions/node/v16.20.2/bin/node"  // Explicitly set Node.js version for PM2
   }],
 
   deploy : {
